@@ -1,9 +1,14 @@
 // punto de entrada al servidor 
 const express = require("express");
 const config = require("./config/config");
+const error = require("./middleware/errors");
+
 const home = require("./routes/home");
 const doctor = require("./routes/doctor");
-const error = require("./middleware/errors");
+const tipoGeneral = require("./routes/tipo_general");
+const paciente = require("./routes/paciente");
+const productos = require("./routes/productos");
+const usuario = require("./routes/usuario");
 
 const app = express();
 
@@ -16,7 +21,11 @@ app.set("port", config.app.port);
 // rutas
 app.use(express.json()); 
 app.use("/", home);
-app.use("/api", doctor);
+app.use("/", doctor);
+app.use("/", tipoGeneral);
+/*app.use("/", paciente);
+app.use("/", productos);
+app.use("/", usuario);*/
 
 // para que index.js pueda acceder a la app
 module.exports = app;

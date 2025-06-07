@@ -1,63 +1,26 @@
 const respuesta = require('../util/respuestas');
 const service = require('../services/doctor_service');
-const db = require('../config/db');
 
 // Obtener todos los doctores con filtros
 exports.getDoctores = async (req, res) => {
     try {
-        const { nombre, telefono, page = 1, limit = 10 } = req.query; // parametros en la url, si los hay
-
-        let query = `
-        SELECT d.nombre, d.apellido, d.telefono, tg.nombre as tipo_documento, d.identificacion from doctor d
-        JOIN tipo_general tg ON d.id_tipo_ident = tg.id_tipo
-        WHERE 1=1
-        `;
-
-        const params = [];
-
-        if (nombre) {
-            query += ` AND (d.nombre LIKE ? OR d.apellido LIKE ?)`;
-            params.push(`%${nombre}%`, `%${nombre}%`);
-        }
-
-        if (telefono) {
-            query += ` AND d.telefono LIKE ?`;
-            params.push(`%${telefono}%`);
-        }
-
-        // paginación
-        const offset = (page - 1) * limit;
-        query += ` ORDER BY d.nombre LIMIT ? OFFSET ?`;
-        params.push(parseInt(limit), parseInt(offset));
-
-        const [doctores] = await db.query(query, params);
-
-        console.log(doctores);
-
-        const countQuery = `
-            SELECT COUNT(*) as total 
-            FROM doctor d 
-            WHERE 1=1 ${nombre ? 'AND (d.nombre LIKE ? OR d.apellido LIKE ?)' : ''}
-            ${telefono ? 'AND d.telefono LIKE ?' : ''}
-        `;
-
-        const [{ total }] = await db.query(countQuery, params.slice(0, -2));
-
-        const data = {
-            data: doctores,
-            pagination: {
-                current_page: parseInt(page),
-                total_pages: Math.ceil(total / limit),
-                total_records: total,
-                per_page: parseInt(limit)
-            }
+        const filters = {
+            nombre: req.query.nombre,
+            telefono: req.query.telefono
         };
 
-        respuesta.success(req, res, data, 200);
+        const pagination = {
+            page: req.query.page || 1,
+            limit: req.query.limit || 10
+        };
+
+        const result = await service.getDoctores(filters, pagination);
+
+        respuesta.success(req, res, result, 200);
     } catch (error) {
-        respuesta.error(req, res, error.message, 500);
+        respuesta.error(req, res, error.message, 200);
     }
-}
+};
 
 // Obtener doctor por id
 exports.getDoctor = async (req, res) => {
@@ -71,5 +34,44 @@ exports.getDoctor = async (req, res) => {
 };
 
 // Agregar doctor 
+exports.addDoctor = async (req, res) => {
+    try {
+        const doctorData = req.body;
+        const newDoctor = await service.createDoctor(doctorData);
+
+        respuesta.success(req, res, {
+            message: 'Doctor creado exitosamente',
+            data: newDoctor
+        }, 201);
+    } catch (error) {
+        if (error.name === 'DuplicateError') {
+            return respuesta.error(req, res, error.message, 409);
+        }
+        
+        if (error.name === 'ValidationError') {
+            return respuesta.error(req, res, error.message, 400);
+        }
+        
+        respuesta.error(req, res, 'Error interno del servidor', 500);
+    }   
+}
 
 // Update doctor
+exports.updateDoctor = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updatedData = req.body;
+
+        const updateDoctor = await service.updateDoctor(id, updatedData);
+
+        respuesta.success(req, res, {
+            message: 'Doctor actualizado exitosamente',
+            data: updatedDoctor
+        }, 200);
+    } catch (error) {
+        if (error.name === 'NotFoundError') {
+            return respuesta.error(req, res, error.message, 404);
+        }
+        respuesta.error(req, res, 'Error interno del servidor', 500);
+    }
+}
