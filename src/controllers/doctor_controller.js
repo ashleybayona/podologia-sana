@@ -38,6 +38,7 @@ exports.addDoctor = async (req, res) => {
     try {
         const doctorData = req.body;
         const newDoctor = await service.createDoctor(doctorData);
+        console.log(newDoctor);
 
         respuesta.success(req, res, {
             message: 'Doctor creado exitosamente',
@@ -66,7 +67,7 @@ exports.updateDoctor = async (req, res) => {
 
         respuesta.success(req, res, {
             message: 'Doctor actualizado exitosamente',
-            data: updatedDoctor
+            data: updateDoctor
         }, 200);
     } catch (error) {
         if (error.name === 'NotFoundError') {

@@ -99,12 +99,9 @@ exports.update = async (id, updateData) => {
         id,
         updateData.telefono || null
     ]
-    console.log('Params:', params);
 
     try {
-        console.log('entra try update');
         const [result] = await db.query(query, params);
-        console.log(result);
         return result[0][0];
     } catch (error) {
         if(error.message.includes('Doctor no encontrado')) {
