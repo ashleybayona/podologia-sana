@@ -52,3 +52,26 @@ exports.countAll = async () => {
     const [result] = await db.query(query);
     return result[0].total;
 }
+
+exports.update = async (id, productoData) => {
+    const query = `
+        CALL sp_actualizar_producto(?, ?, ?, ?, ?, ?)
+    `;
+    const params = [
+        id,
+        productoData.nombre || null,
+        productoData.descripcion || null,
+        productoData.precio_venta || null,
+        productoData.stock || null,
+        productoData.id_tipo_categoria || null,
+    ];
+
+    try {
+        const [result] = await db.query(query, params);
+        const updatedProducto = result[0][0];
+        updatedProducto.precio_venta = parseFloat(updatedProducto.precio_venta);
+        return updatedProducto;
+    } catch (error) {
+        throw error;
+    }
+}

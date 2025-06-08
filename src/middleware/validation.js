@@ -209,6 +209,59 @@ const validation = {
             }
 
             next();
+        },
+
+        validateUpdate: async (req, res, next) => {  // descripcion, precio_venta, stock, nombre, categoria
+            const { nombre, descripcion, precio_venta, stock, categoria } = req.body;
+            const errors = [];
+
+            if (nombre && nombre.trim().length < 2) {
+                errors.push('nombre debe tener al menos 2 caracteres');
+            }
+
+            if (precio_venta != undefined && (isNaN(precio_venta) || parseFloat(precio_venta) <= 0)) {
+                errors.push('precio_venta debe ser un número mayor a 0');
+            }
+
+            if (stock != undefined && (isNaN(stock) || parseInt(stock) < 0)) {
+                errors.push('stock debe ser un número entero mayor o igual a 0');
+            }
+
+            if (categoria && typeof categoria !== 'string') {
+                errors.push('categoria debe ser una cadena de texto');
+            }
+
+            if (errors.length > 0) {
+                const error = {
+                    error: 'Datos de entrada inválidos',
+                    details: errors
+                }
+
+                return respuesta.error(req, res, error, 400);
+            }
+
+            try {
+                if (categoria) {
+                    const tipoModel = require('../models/tipo_general_model');
+                    const tipo = await tipoModel.findByNameOrCode(categoria);
+
+                    if (!tipo) {
+                        return respuesta.error(req, res, `categoria '${categoria}' no encontrada`, 404);
+                    }
+
+                    req.body.id_tipo_categoria = tipo.id;
+                    delete req.body.categoria; // eliminar el campo categoria
+                }
+
+                if (nombre) req.body.nombre = nombre.trim();
+                if (descripcion) req.body.descripcion = descripcion.trim();
+                if (precio_venta) req.body.precio_venta = parseFloat(precio_venta);
+                if (stock) req.body.stock = parseInt(stock);
+            } catch (error) {
+                return respuesta.error(req, res, 'Error al procesar los datos', 500);
+            }
+
+            next();
         }
     }
 }

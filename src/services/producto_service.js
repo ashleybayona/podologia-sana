@@ -19,3 +19,7 @@ exports.getProductos = async (pagination = {}) => {
 exports.createProducto = async (productoData) => {
     return await model.create(productoData);
 }
+
+exports.updateProducto = async (id, productoData) => {
+    return await model.update(id, productoData);
+}

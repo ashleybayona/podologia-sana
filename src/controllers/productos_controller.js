@@ -16,8 +16,6 @@ exports.getProductos = async (req, res) => {
     }
 }
 
-// Obtener producto por id
-
 // Agregar producto
 exports.addProducto = async (req, res) => {
     try {
@@ -35,3 +33,18 @@ exports.addProducto = async (req, res) => {
 }
 
 // Update producto
+exports.updateProducto = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const productoData = req.body;
+
+        const updatedProducto = await service.updateProducto(id, productoData);
+
+        respuesta.success(req, res, {
+            message: 'Producto actualizado exitosamente',
+            data: updatedProducto
+        }, 200);
+    } catch (error) {
+        respuesta.error(req, res, error.message, 500);
+    }
+}
