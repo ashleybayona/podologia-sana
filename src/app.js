@@ -2,6 +2,7 @@
 const express = require("express");
 const config = require("./config/config");
 const error = require("./middleware/errors");
+const cors = require('cors');
 
 const home = require("./routes/home");
 const doctor = require("./routes/doctor");
@@ -14,6 +15,7 @@ const app = express();
 
 // middlewares
 app.use(error);
+app.use(cors()); 
 
 // config
 app.set("port", config.app.port);
