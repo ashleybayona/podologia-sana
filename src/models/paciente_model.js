@@ -49,11 +49,10 @@ exports.getAllPacientes= async (filters = {}, pagination = {}) => {
 
     const pacientes = result.map(paciente => ({
         ...paciente,
-        peso: paciente.peso ? parseFloat(paciente.peso) : null, // Convertir peso a número
-        altura: paciente.altura ? parseFloat(paciente.altura) : null, // Convertir altura a número
+        peso: paciente.peso ? parseFloat(paciente.peso) : null, 
+        altura: paciente.altura ? parseFloat(paciente.altura) : null, 
     }));
 
-    console.log('model paciente', pacientes);
     return pacientes;
 }
 

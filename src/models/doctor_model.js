@@ -70,7 +70,6 @@ exports.create = async (doctorData) => {
         doctorData.id_tipo_ident,
         doctorData.identificacion
     ];
-    console.log('Params:', params);
 
     try {
         const [result] = await db.query(query, params);

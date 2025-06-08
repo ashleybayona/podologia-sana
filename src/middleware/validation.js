@@ -207,6 +207,8 @@ const validation = {
             } catch (error) {
                 return respuesta.error(req, res, 'Error al procesar los datos', 500);
             }
+
+            next();
         }
     }
 }

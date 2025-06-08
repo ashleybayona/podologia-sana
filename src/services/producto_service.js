@@ -1,3 +1,4 @@
+const { producto } = require('../middleware/validation');
 const model = require('../models/producto_model');
 
 exports.getProductos = async (pagination = {}) => {
@@ -13,4 +14,8 @@ exports.getProductos = async (pagination = {}) => {
             per_page: limit
         }
     }
+}
+
+exports.createProducto = async (productoData) => {
+    return await model.create(productoData);
 }

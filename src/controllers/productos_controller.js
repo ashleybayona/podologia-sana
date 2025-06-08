@@ -19,5 +19,19 @@ exports.getProductos = async (req, res) => {
 // Obtener producto por id
 
 // Agregar producto
+exports.addProducto = async (req, res) => {
+    try {
+        const productoData = req.body;
+        const newProducto = await service.createProducto(productoData);
+        console.log(newProducto);
+        
+        respuesta.success(req, res, {
+            message: 'Producto creado exitosamente',
+            data: newProducto
+        }, 201);
+    } catch (error) {
+        respuesta.error(req, res, error.message, 500);
+    }
+}
 
 // Update producto
