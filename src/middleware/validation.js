@@ -163,6 +163,50 @@ const validation = {
             }
 
             next();
+        },
+
+        validateCreate: async (req, res, next) => { // nombre, descripcion, precio_venta, stock, categoria -> pasar a id
+            const { nombre, descripcion, precio_venta, stock, categoria } = req.body;
+            const errors = [];
+
+            if (!nombre || nombre.trim().length < 2) {
+                errors.push('nombre es obligatorio y debe tener al menos 2 caracteres');
+            }
+
+            if (!precio_venta || isNaN(precio_venta) || parseFloat(precio_venta) <= 0) {
+                errors.push('precio_venta es obligatorio y debe ser un número mayor a 0');
+            }
+
+            if (!stock || isNaN(stock) || parseInt(stock) < 0) {
+                errors.push('stock es obligatorio y debe ser un número entero mayor o igual a 0');
+            }
+
+            if (!categoria) {
+                errors.push('categoria es obligatoria');
+            }
+
+            if (errors.length > 0) {
+                const error = {
+                    error: 'Datos de entrada inválidos',
+                    details: errors
+                }
+
+                return respuesta.error(req, res, error, 400);
+            }
+
+            try {
+                const tipoModel = require('../models/tipo_general_model');
+                const tipo = await tipoModel.findByNameOrCode(categoria);
+
+                if (!tipo) {
+                    return respuesta.error(req, res, `categoria '${categoria}' no encontrada`, 404);
+                }
+
+                req.body.id_tipo_categoria = tipo.id;
+                delete req.body.categoria; // eliminar el campo categoria
+            } catch (error) {
+                return respuesta.error(req, res, 'Error al procesar los datos', 500);
+            }
         }
     }
 }

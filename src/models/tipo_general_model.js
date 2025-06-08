@@ -8,6 +8,14 @@ exports.getAllTipoIdentificacion = async () => {
     return result || null;
 }
 
+exports.getAllCategoriaProducto = async () => {
+    const query = `
+        SELECT id_tipo AS id, codigo, nombre FROM tipo_general WHERE codigo LIKE 'CP%';
+    `;
+    const [result] = await db.query(query);
+    return result || null;
+}
+
 exports.findByNameOrCode = async (nameOrCode) => {
     const query = `
         SELECT id_tipo AS id, nombre, codigo 

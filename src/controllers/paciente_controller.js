@@ -15,6 +15,7 @@ exports.getPacientes = async (req, res) => {
             limit: parseInt(req.query.limit) || 10
         }
         const pacientes = await service.getPacientes(filters, pagination);
+        console.log('controlador paciente', pacientes);
         respuesta.success(req, res, pacientes);
     } catch (error) {
         respuesta.error(req, res, error.message, 500);

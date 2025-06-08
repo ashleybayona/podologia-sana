@@ -6,5 +6,6 @@ const validation = require('../middleware/validation');
 
 // Rutas
 router.get('/tipo-identificacion', controller.getTiposIdentificacion);
+router.get('/categorias-producto', controller.getCategoriasProducto);
 
 module.exports = router;

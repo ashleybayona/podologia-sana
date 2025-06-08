@@ -46,7 +46,15 @@ exports.getAllPacientes= async (filters = {}, pagination = {}) => {
     const queryParams = [...params, limit, offset];
 
     const [result] = await db.query(query, queryParams);
-    return result;
+
+    const pacientes = result.map(paciente => ({
+        ...paciente,
+        peso: paciente.peso ? parseFloat(paciente.peso) : null, // Convertir peso a número
+        altura: paciente.altura ? parseFloat(paciente.altura) : null, // Convertir altura a número
+    }));
+
+    console.log('model paciente', pacientes);
+    return pacientes;
 }
 
 exports.countWithFilters = async (filters = {}) => {
