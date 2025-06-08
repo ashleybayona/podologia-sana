@@ -134,7 +134,7 @@ const validation = {
         validateFilters: (req, res, next) => {
             const { numero_historia, nombre, telefono } = req.query;
 
-            if (numero_historia && parseInt(numero_historia) <= 0) {
+            if (numero_historia && numero_historia <= 0) {
                 return respuesta.error(req, res, 'numero_historia debe ser un número entero mayor a 0', 400);
             }
 
@@ -144,6 +144,22 @@ const validation = {
 
             if (telefono && typeof telefono !== 'string') {
                 return respuesta.error(req, res, 'telefono debe ser una cadena de texto', 400);
+            }
+
+            next();
+        }
+    },
+
+    producto: {
+        validateFilters: (req, res, next) => {
+            const { nombre, categoria } = req.query;
+
+            if (nombre && typeof nombre !== 'string') {
+                return respuesta.error(req, res, 'nombre debe ser una cadena de texto', 400);
+            }
+
+            if (categoria && typeof categoria !== 'string') {
+                return respuesta.error(req, res, 'categoria debe ser una cadena de texto', 400);
             }
 
             next();

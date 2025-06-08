@@ -6,7 +6,7 @@ function buildFilterQuery (filters) {
 
     if(filters.numero_historia) {
         whereClause += ' AND p.numero_historia = ?';
-        params.push(`%${filters.numero_historia}%`);
+        params.push(filters.numero_historia);
     }
 
     if (filters.nombre) {
