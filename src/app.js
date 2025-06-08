@@ -25,8 +25,8 @@ app.use(express.json());
 app.use("/", home);
 app.use("/", doctor);
 app.use("/", tipoGeneral);
-/*app.use("/", paciente);
-app.use("/", productos);
+app.use("/", paciente);
+/*app.use("/", productos);
 app.use("/", usuario);*/
 
 // para que index.js pueda acceder a la app
