@@ -1,9 +1,20 @@
-const db = require('../config/db');
+const respuesta = require('../util/respuestas');
+const service = require('../services/usuario_service');
 
-// Obtener todos los usuarios con filtros
+// Login
+exports.login = async (req, res) => {
+    try {
+        const { username, password } = req.body;
 
-// Obtener usuario por id
-
-// Agregar usuario
+        const usuario = await service.login(username, password);
+        if (!usuario) {
+            return respuesta.error(req, res, 'Usuario o contraseña incorrectos', 401);
+        }
+        // generar un token JWT pa despues
+        respuesta.success(req, res, { message: 'Inicio de sesión exitoso', usuario }, 200);
+    } catch (error) {
+        respuesta.error(req, res, error.message, 500);
+    }
+}
 
 // Update usuario

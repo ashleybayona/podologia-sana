@@ -25,3 +25,11 @@ exports.findByNameOrCode = async (nameOrCode) => {
     const [result] = await db.query(query, [nameOrCode, nameOrCode, nameOrCode]);
     return result[0] || null;
 }
+
+exports.getNameById = async (id) => {
+    const query = `
+        SELECT nombre FROM tipo_general WHERE id_tipo = ?;
+    `;
+    const [result] = await db.query(query, [id]);
+    return result[0] || null;
+}

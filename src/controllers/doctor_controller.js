@@ -32,7 +32,6 @@ exports.addDoctor = async (req, res) => {
     try {
         const doctorData = req.body;
         const newDoctor = await service.createDoctor(doctorData);
-        console.log(newDoctor);
 
         respuesta.success(req, res, {
             message: 'Doctor creado exitosamente',

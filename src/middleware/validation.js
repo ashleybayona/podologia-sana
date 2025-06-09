@@ -33,6 +33,22 @@ const validation = {
         next();
     },
 
+    validateLogin: (req, res, next) => {
+        const { username, password } = req.body;
+
+        if (!username || !password) {
+            return respuesta.error(req, res, 'Faltan datos de inicio de sesión', 400);
+        }
+
+        if (typeof username !== 'string' || typeof password !== 'string') {
+            return respuesta.error(req, res, 'username y password deben ser cadenas de texto', 400);
+        }
+
+        req.body.username = username.trim();
+        req.body.password = password.trim();
+        next();
+    },
+
     doctor: {
         validateCreate: async (req, res, next) => {
             const { nombre, apellido, telefono, tipo_identificacion, identificacion } = req.body;

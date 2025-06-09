@@ -8,7 +8,7 @@ exports.getById = async (id) => {
         WHERE d.id_doctor = ?
     `;
     const [doctor] = await db.query(query, [id]);
-    return doctor || null;
+    return doctor[0] || null;
 }
 
 exports.getAll = async (pagination = {}) => {

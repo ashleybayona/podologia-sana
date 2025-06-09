@@ -29,7 +29,7 @@ app.use("/", tipoGeneral);
 app.use("/", paciente);
 app.use("/", productos);
 app.use("/", citas);
-//app.use("/", usuario);
+app.use("/", usuario);
 
 // para que index.js pueda acceder a la app
 module.exports = app;

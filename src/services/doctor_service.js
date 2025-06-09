@@ -1,4 +1,6 @@
 const model = require('../models/doctor_model');
+const usuarioModel = require('../models/usuario_model');
+const bcrypt = require('bcrypt');
 
 exports.getDoctores = async (pagination = {}) => {
     const { page, limit } = pagination;
@@ -25,7 +27,24 @@ exports.getDoctorById = async (id) => {
 }
 
 exports.createDoctor = async (doctorData) => {
-    return await model.create(doctorData);
+    const newDoctor = await model.create(doctorData);
+    console.log(newDoctor);
+
+    if (!newDoctor) throw new Error('Error al crear el doctor');
+
+    const dni = newDoctor.identificacion;
+    const hashedPassword = await bcrypt.hash(dni, 10);
+
+    const usuarioData = {
+        username: newDoctor.identificacion,
+        contrasenia: hashedPassword,
+        id_tipo_rol: 21,
+        id_doctor: newDoctor.id_doctor
+    };
+
+    await usuarioModel.create(usuarioData);
+
+    return newDoctor;
 }
 
 exports.updateDoctor = async (id, doctorData) => {
