@@ -12,7 +12,7 @@ exports.getDoctores = async (req, res) => {
 
         respuesta.success(req, res, result, 200);
     } catch (error) {
-        respuesta.error(req, res, error.message, 200);
+        respuesta.error(req, res, error.message, 500);
     }
 };
 

@@ -10,6 +10,7 @@ const tipoGeneral = require("./routes/tipo_general");
 const paciente = require("./routes/paciente");
 const productos = require("./routes/productos");
 const usuario = require("./routes/usuario");
+const citas = require("./routes/citas");
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use("/", doctor);
 app.use("/", tipoGeneral);
 app.use("/", paciente);
 app.use("/", productos);
+app.use("/", citas);
 //app.use("/", usuario);
 
 // para que index.js pueda acceder a la app
