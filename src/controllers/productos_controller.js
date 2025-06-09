@@ -8,9 +8,9 @@ exports.getProductos = async (req, res) => {
             page: parseInt(req.query.page) || 1,
             limit: parseInt(req.query.limit) || 100
         };
-        
         const productos = await service.getProductos(pagination);
-        respuesta.success(req, res, productos);
+
+        respuesta.success(req, res, productos, 200);
     } catch (error) {
         respuesta.error(req, res, error.message, 500);
     }

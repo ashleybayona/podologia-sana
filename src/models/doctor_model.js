@@ -11,51 +11,28 @@ exports.getById = async (id) => {
     return doctor || null;
 }
 
-function buildFilterquery (filters) {
-    let whereClause = 'WHERE 1 = 1';
-    const params = [];
-
-    if (filters.nombre) {
-        whereClause += ' AND (d.nombre LIKE ? OR d.apellido LIKE ?)';
-        params.push(`%${filters.nombre}%`, `%${filters.nombre}%`);
-    }
-
-    if (filters.telefono) {
-        whereClause += ` AND d.telefono LIKE ?`;
-        params.push(`%${filters.telefono}%`);
-    }
-        
-    return { whereClause, params };
-}
-
-exports.getAll = async (filters = {}, pagination = {}) => {
-    const { whereClause, params } = buildFilterquery(filters);
+exports.getAll = async (pagination = {}) => {
     const { page, limit } = pagination;
 
     const query = `
         SELECT d.id_doctor as id, d.nombre, d.apellido, d.telefono, tg.nombre as tipo_documento, d.identificacion FROM doctor d
         JOIN tipo_general tg on d.id_tipo_ident = tg.id_tipo
-        ${whereClause}
         ORDER BY d.nombre
         LIMIT ? OFFSET ?
     `;
 
     const offset = (page - 1) * limit;
-    const queryParams = [...params, limit, offset];
+    const queryParams = [limit, offset];
     
     const [result] = await db.query(query, queryParams);
     return result;
 }
 
-exports.countWithFilters = async (filters = {}) => {
-    const { whereClause, params } = buildFilterquery(filters);
-
+exports.countAll = async () => {
     const query = `
-        SELECT COUNT(*) as total FROM doctor d
-        ${whereClause}
+        SELECT COUNT(*) as total FROM doctor 
     `;
-
-    const [result] = await db.query(query, params);
+    const [result] = await db.query(query);
     return result[0].total;
 }
 

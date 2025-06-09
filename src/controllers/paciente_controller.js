@@ -4,19 +4,13 @@ const service = require('../services/paciente_service');
 // Obtener todos los pacientes con filtros
 exports.getPacientes = async (req, res) => {
     try {
-        const filters = {
-            numero_historia : req.query.numero_historia,
-            nombre: req.query.nombre,
-            telefono: req.query.telefono   
-        }   
-
         const pagination = {
             page: parseInt(req.query.page) || 1,
             limit: parseInt(req.query.limit) || 10
         }
-        const pacientes = await service.getPacientes(filters, pagination);
-        console.log('controlador paciente', pacientes);
-        respuesta.success(req, res, pacientes);
+        const pacientes = await service.getPacientes(pagination);
+
+        respuesta.success(req, res, pacientes, 200);
     } catch (error) {
         respuesta.error(req, res, error.message, 500);
     }

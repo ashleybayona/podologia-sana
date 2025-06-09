@@ -4,17 +4,11 @@ const service = require('../services/doctor_service');
 // Obtener todos los doctores con filtros
 exports.getDoctores = async (req, res) => {
     try {
-        const filters = {
-            nombre: req.query.nombre,
-            telefono: req.query.telefono
-        };
-
         const pagination = {
             page: req.query.page || 1,
             limit: req.query.limit || 10
         };
-
-        const result = await service.getDoctores(filters, pagination);
+        const result = await service.getDoctores(pagination);
 
         respuesta.success(req, res, result, 200);
     } catch (error) {

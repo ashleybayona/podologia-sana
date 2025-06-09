@@ -1,11 +1,9 @@
 const model = require('../models/doctor_model');
 
-exports.getDoctores = async (filters = {},pagination = {}) => {
+exports.getDoctores = async (pagination = {}) => {
     const { page, limit } = pagination;
-
-    const doctores = await model.getAll(filters, pagination);
-
-    const total = await model.countWithFilters(filters);
+    const doctores = await model.getAll(pagination);
+    const total = await model.countAll();
 
     return {
         data: doctores,
