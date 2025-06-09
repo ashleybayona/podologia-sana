@@ -5,7 +5,7 @@ exports.getCitas = async (req, res) => {
     try {
         const pagination = {
             page: req.query.page || 1,
-            limit: req.query.limit || 10
+            limit: req.query.limit || 100
         };
         const result = await service.getCitas(pagination);
 
