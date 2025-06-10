@@ -133,7 +133,42 @@ const validation = {
     },
 
     paciente: {
-        
+        validateUpdate: (req, res, next) => {
+            const { telefono, correo, peso, alergias } = req.body;
+            const errors = [];
+
+            if (telefono !== undefined && !/^\d{7,15}$/.test(telefono)) {
+                errors.push('Telefono debe tener entre 7 y 15 dígitos');
+            }
+
+            if (correo !== undefined && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+                errors.push('Correo debe ser un email válido');
+            }
+
+            if (peso !== undefined && (isNaN(peso) || parseFloat(peso) <= 0)) {
+                errors.push('Peso debe ser un número mayor a 0');
+            }
+
+            if (alergias !== undefined && typeof alergias !== 'string') {
+                errors.push('Alergias debe ser una cadena de texto');
+            }
+
+            if (errors.length > 0) {
+                const error = {
+                    error: 'Datos de entrada inválidos',
+                    details: errors
+                }
+
+                return respuesta.error(req, res, error, 400);
+            }
+
+            if (telefono) req.body.telefono = telefono.trim();
+            if (correo) req.body.correo = correo.trim();
+            if (peso) req.body.peso = parseFloat(peso);
+            if (alergias) req.body.alergias = alergias.trim();
+
+            next();
+        }
     },
 
     producto: {
