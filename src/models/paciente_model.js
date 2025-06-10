@@ -8,6 +8,7 @@ exports.getAllPacientes= async (pagination = {}) => {
         JOIN tipo_general tg ON p.id_tipo_ident = tg.id_tipo
         JOIN tipo_general tg2 ON p.id_tipo_pie = tg2.id_tipo
         JOIN ubigeo u ON p.id_ubigeo = u.id_ubigeo
+        WHERE p.es_paciente_medico = true
         ORDER BY p.numero_historia DESC
         LIMIT ? OFFSET ?
     `;
