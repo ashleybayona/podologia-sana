@@ -33,3 +33,25 @@ exports.countAll = async () => {
     const [result] = await db.query(query);
     return result[0].total;
 }
+
+exports.update = async (id, updatedData) => {
+    const query = `
+        CALL sp_actualizar_paciente(?, ?, ?, ?, ?)
+    `;
+    const params = [
+        id,
+        updatedData.telefono || null,
+        updatedData.correo || null,
+        updatedData.peso || null,
+        updatedData.alergias || null
+    ];
+
+    try {
+        const [result] = await db.query(query, params);
+        const updatedPaciente = result[0][0];
+        updatedPaciente.peso = parseFloat(updatedPaciente.peso);
+        return updatedPaciente;
+    } catch (error) {
+        throw error;
+    }
+}
