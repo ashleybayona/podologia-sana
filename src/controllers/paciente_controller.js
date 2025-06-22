@@ -24,9 +24,6 @@ exports.getPacienteById = async (req, res) => {
 
         respuesta.success(req, res, paciente, 200);
     } catch (error) {
-        if (error.name === 'NotFoundError') {
-            return respuesta.error(req, res, 'Paciente no encontrado', 404);
-        }
         respuesta.error(req, res, error.message, 500);
     }
 };
@@ -34,17 +31,12 @@ exports.getPacienteById = async (req, res) => {
 // Agregar paciente
 exports.addPaciente = async (req, res) => {
     try {
-        const newPaciente = req.body;
-        const pacienteCreado = await service.addPaciente(newPaciente);
-        respuesta.success(req, res, {
-            message: 'Paciente agregado exitosamente',
-            data: pacienteCreado
-        }, 201);
+        const pacienteData = req.body;
+        const newPaciente = await service.addPaciente(pacienteData);
+
+        respuesta.success(req, res, newPaciente, 200);
     } catch (error) {
-        if (error.name === 'ValidationError' || error.name === 'DuplicateError') {
-            return respuesta.error(req, res, error.message, 400);
-        }
-        respuesta.error(req, res, 'Error al agregar paciente', 500);
+        respuesta.error(req, res, error.message, 500);
     }
 };
 
@@ -53,22 +45,10 @@ exports.updatePaciente = async (req, res) => {
     try {
         const { id } = req.params;
         const updatedData = req.body;
-
         const updatedPaciente = await service.updatePaciente(id, updatedData);
 
-        respuesta.success(req, res, {
-            message: 'Paciente actualizado exitosamente',
-            data: updatedPaciente
-        }, 200);
+        respuesta.success(req, res, updatedPaciente, 200);
     } catch (error) {
-        if (error.name === 'ValidationError') {
-            return respuesta.error(req, res, error.message, 400);
-        }
-        
-        if (error.name === 'NotFoundError') {
-            return respuesta.error(req, res, error.message, 404);
-        }
-
-        respuesta.error(req, res, 'Error interno del servidor', 500);
+        respuesta.error(req, res, error.message, 500);
     }
 }
