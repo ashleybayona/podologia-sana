@@ -17,7 +17,7 @@ exports.create = async (usuarioData) => {
 
 exports.findByUsername = async (username) => {
     const query = `
-        SELECT u.username, u.contrasenia, u.id_doctor, u.id_tipo_rol FROM usuario u WHERE username = ?
+        SELECT u.username, u.contrasenia, u.id_doctor, u.id_tipo_rol FROM usuario u WHERE username = ? AND estado = 'activo'
     `;
     const params = [username];
 

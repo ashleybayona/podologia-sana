@@ -46,7 +46,7 @@ exports.addDoctor = async (req, res) => {
             return respuesta.error(req, res, error.message, 400);
         }
         
-        respuesta.error(req, res, 'Error interno del servidor', 500);
+        respuesta.error(req, res, error.message, 500);
     }   
 }
 
@@ -66,6 +66,17 @@ exports.updateDoctor = async (req, res) => {
         if (error.name === 'NotFoundError') {
             return respuesta.error(req, res, error.message, 404);
         }
-        respuesta.error(req, res, 'Error interno del servidor', 500);
+        respuesta.error(req, res, error.message, 500);
+    }
+}
+
+// Delete doctor
+exports.deleteDoctor = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const message = await service.deleteDoctor(id);
+        respuesta.success(req, res, message, 200);
+    } catch (error) {
+        respuesta.error(req, res, error.message, 500);
     }
 }

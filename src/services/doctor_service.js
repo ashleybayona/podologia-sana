@@ -32,21 +32,34 @@ exports.createDoctor = async (doctorData) => {
 
     if (!newDoctor) throw new Error('Error al crear el doctor');
 
-    const dni = newDoctor.identificacion;
-    const hashedPassword = await bcrypt.hash(dni, 10);
+    // SI EL DOC SOLO ESTABA INACTIVO, YA SE HACE LA ACTIVACION DEL USUARIO EN EL PROC, POR LO Q ESTE CODIGO NO VA
 
-    const usuarioData = {
-        username: newDoctor.identificacion,
-        contrasenia: hashedPassword,
-        id_tipo_rol: 21,
-        id_doctor: newDoctor.id_doctor
-    };
+    if (!newDoctor.mensaje) {
+        const dni = newDoctor.identificacion;
+        const hashedPassword = await bcrypt.hash(dni, 10);
 
-    await usuarioModel.create(usuarioData);
+        const usuarioData = {
+            username: newDoctor.identificacion,
+            contrasenia: hashedPassword,
+            id_tipo_rol: 21,
+            id_doctor: newDoctor.id_doctor
+        };
+
+        await usuarioModel.create(usuarioData);
+    }
 
     return newDoctor;
 }
 
 exports.updateDoctor = async (id, doctorData) => {
-    return await model.update(id, doctorData);
+    const doctorUpdated = await model.update(id, doctorData);
+    if (!doctorUpdated) throw new NotFoundError('Doctor no encontrado');
+    return doctorUpdated;
 }
+
+exports.deleteDoctor = async (id) => {
+    const message = await model.delete(id);
+    if (!message) throw new NotFoundError('Doctor no encontrado');
+    return message;
+}
+

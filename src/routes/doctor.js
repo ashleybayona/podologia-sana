@@ -9,5 +9,6 @@ router.get('/doctores', validation.validatePagination, controller.getDoctores);
 router.get('/doctor/:id', validation.validateId('id'), controller.getDoctor);
 router.post('/doctor', validation.doctor.validateCreate, controller.addDoctor);
 router.put('/doctor/:id', validation.validateId('id'), validation.doctor.validateUpdate, controller.updateDoctor);
+router.delete('/doctor/:id', validation.validateId('id'), controller.deleteDoctor);
 
 module.exports = router;

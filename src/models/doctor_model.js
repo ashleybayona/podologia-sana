@@ -6,8 +6,12 @@ exports.getById = async (id) => {
         FROM doctor d
         JOIN tipo_general tg ON d.id_tipo_ident = tg.id_tipo
         WHERE d.id_doctor = ?
+        AND d.estado = 'activo'
     `;
     const [doctor] = await db.query(query, [id]);
+    if (doctor.length === 0) {
+        throw new Error('Doctor no encontrado');
+    }
     return doctor[0] || null;
 }
 
@@ -17,7 +21,7 @@ exports.getAll = async (pagination = {}) => {
     const query = `
         SELECT d.id_doctor as id, d.nombre, d.apellido, d.telefono, tg.nombre as tipo_documento, d.identificacion FROM doctor d
         JOIN tipo_general tg on d.id_tipo_ident = tg.id_tipo
-        ORDER BY d.nombre
+        WHERE d.estado = 'activo'
         LIMIT ? OFFSET ?
     `;
 
@@ -50,7 +54,6 @@ exports.create = async (doctorData) => {
 
     try {
         const [result] = await db.query(query, params);
-        console.log(result);
         return result[0][0];
     } catch (error) {
         if(error.message.includes('Ya existe un doctor con esta identificación')) {
@@ -81,6 +84,23 @@ exports.update = async (id, updateData) => {
         return result[0][0];
     } catch (error) {
         if(error.message.includes('Doctor no encontrado')) {
+            const customError = new Error(error.message);
+            customError.name = 'NotFoundError';
+            throw customError;
+        }
+        throw error.sqlMessage;
+    }
+}
+
+exports.delete = async (id) => {
+    const query = `
+    CALL sp_inactivar_doctor_completo(?)
+    `;
+    try {
+        const [result] = await db.query(query, [id]);
+        return result[0][0];
+    } catch (error) {
+        if(error.message.includes('Doctor no existe')) {
             const customError = new Error(error.message);
             customError.name = 'NotFoundError';
             throw customError;

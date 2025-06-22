@@ -4,12 +4,7 @@ exports.getAllPacientes= async (pagination = {}) => {
     const { page, limit } = pagination;
 
     const query = `
-        SELECT p.id_paciente, p.numero_historia, p.nombre, p.apellido, tg.nombre AS tipo_identificacion, p.identificacion, p.telefono, p.correo, u.distrito, u.departamento, u.provincia, p.direccion, tg2.nombre AS tipo_pie, p.peso, p.altura, p.alergias FROM paciente p
-        JOIN tipo_general tg ON p.id_tipo_ident = tg.id_tipo
-        JOIN tipo_general tg2 ON p.id_tipo_pie = tg2.id_tipo
-        JOIN ubigeo u ON p.id_ubigeo = u.id_ubigeo
-        WHERE p.es_paciente_medico = true
-        ORDER BY p.numero_historia DESC
+        SELECT * FROM view_pacientes_medicos
         LIMIT ? OFFSET ?
     `;
 

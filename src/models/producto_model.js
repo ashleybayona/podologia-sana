@@ -5,9 +5,7 @@ exports.getAll = async (pagination = {}) => {
     
     // cambiar a vista
     const query = `
-        SELECT p.id_producto as id, p.nombre, p.descripcion, p.precio_venta, p.stock, tg.nombre as categoria FROM productos p
-        JOIN tipo_general tg ON tg.id_tipo = p.id_tipo_categoria
-        ORDER BY p.nombre
+        SELECT * FROM view_productos
         LIMIT ? OFFSET ?
     `;
 
