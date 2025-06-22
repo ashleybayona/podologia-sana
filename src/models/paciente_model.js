@@ -50,3 +50,66 @@ exports.update = async (id, updatedData) => {
         throw error;
     }
 }
+
+exports.getById = async (id) => {
+    const query = `
+        SELECT * FROM view_pacientes_medicos WHERE id_paciente = ?
+    `;
+    const [result] = await db.query(query, [id]);
+
+    if (result.length === 0) {
+        const error = new Error('Paciente no encontrado');
+        error.name = 'NotFoundError';
+        throw error;
+    }
+
+    const paciente = result[0];
+    return {
+        ...paciente,
+        peso: paciente.peso ? parseFloat(paciente.peso) : null,
+        altura: paciente.altura ? parseFloat(paciente.altura) : null
+    };
+};
+
+exports.create = async (pacienteData) => {
+    const query = `
+        CALL sp_crear_paciente(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+    const params = [
+        pacienteData.numero_historia,
+        pacienteData.id_tipo_ident,
+        pacienteData.identificacion,
+        pacienteData.nombre,
+        pacienteData.apellido,
+        pacienteData.fecha_nacimiento,
+        pacienteData.telefono,
+        pacienteData.correo,
+        pacienteData.id_ubigeo,
+        pacienteData.direccion,
+        pacienteData.genero,
+        pacienteData.id_tipo_pie,
+        pacienteData.peso || null,
+        pacienteData.altura || null,
+        pacienteData.alergias || null,
+        pacienteData.es_paciente_medico
+    ];
+
+    try {
+        const [result] = await db.query(query, params);
+        return result[0][0];
+    } catch (error) {
+        if (error.message.includes('Ya existe un paciente con esta identificación')) {
+            const customError = new Error(error.message);
+            customError.name = 'DuplicateError';
+            throw customError;
+        }
+
+        if (error.message.includes('Tipo de identificación no válido')) {
+            const customError = new Error(error.message);
+            customError.name = 'ValidationError';
+            throw customError;
+        }
+
+        throw error;
+    }
+};

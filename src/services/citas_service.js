@@ -15,3 +15,11 @@ exports.getCitas = async (pagination = {}) => {
         }
     };
 }
+
+exports.updateCita = async (id, updatedData) => {
+    return await model.update(id, updatedData);
+};
+
+exports.createCita = async (citaData) => {
+    return await model.create(citaData);
+};
