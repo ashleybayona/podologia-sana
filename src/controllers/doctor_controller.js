@@ -33,21 +33,10 @@ exports.addDoctor = async (req, res) => {
         const doctorData = req.body;
         const newDoctor = await service.createDoctor(doctorData);
 
-        respuesta.success(req, res, {
-            message: 'Doctor creado exitosamente',
-            data: newDoctor
-        }, 201);
+        respuesta.success(req, res, newDoctor, 200);
     } catch (error) {
-        if (error.name === 'DuplicateError') {
-            return respuesta.error(req, res, error.message, 409);
-        }
-        
-        if (error.name === 'ValidationError') {
-            return respuesta.error(req, res, error.message, 400);
-        }
-        
         respuesta.error(req, res, error.message, 500);
-    }   
+    }
 }
 
 // Update doctor
@@ -55,17 +44,10 @@ exports.updateDoctor = async (req, res) => {
     try {
         const { id } = req.params;
         const updatedData = req.body;
-
         const updateDoctor = await service.updateDoctor(id, updatedData);
 
-        respuesta.success(req, res, {
-            message: 'Doctor actualizado exitosamente',
-            data: updateDoctor
-        }, 200);
+        respuesta.success(req, res, updateDoctor, 200);
     } catch (error) {
-        if (error.name === 'NotFoundError') {
-            return respuesta.error(req, res, error.message, 404);
-        }
         respuesta.error(req, res, error.message, 500);
     }
 }

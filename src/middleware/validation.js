@@ -512,6 +512,57 @@ const validation = {
 
             next();
         }
+    },
+
+    tratamiento: {
+        validateCreate: (req, res, next) => {
+            const { nombre, descripcion } = req.body;
+            const errors = [];
+
+            if (!nombre || typeof nombre !== 'string' || nombre.trim().length < 2) {
+                errors.push('Nombre es obligatorio y debe tener al menos 2 caracteres');
+            }
+
+            if (descripcion === undefined || typeof descripcion !== 'string' || descripcion.trim().length === 0) {
+                errors.push('Descripción es obligatoria y debe ser una cadena de texto');
+            }
+
+            if (errors.length > 0) {
+                return respuesta.error(req, res, {
+                    error: 'Datos de entrada inválidos',
+                    details: errors
+                }, 400);
+            }
+
+            req.body.nombre = nombre.trim();
+            req.body.descripcion = descripcion.trim();
+            next();
+        },
+
+        validateUpdate: (req, res, next) => {
+            const { nombre, descripcion } = req.body;
+            const errors = [];
+
+            if (nombre !== undefined && (typeof nombre !== 'string' || nombre.trim().length < 2)) {
+                errors.push('Nombre debe tener al menos 2 caracteres si se proporciona');
+            }
+
+            if (descripcion !== undefined && (typeof descripcion !== 'string' || descripcion.trim().length === 0)) {
+                errors.push('Descripción debe ser una cadena de texto si se proporciona');
+            }
+
+            if (errors.length > 0) {
+                return respuesta.error(req, res, {
+                    error: 'Datos de entrada inválidos',
+                    details: errors
+                }, 400);
+            }
+
+            if (nombre) req.body.nombre = nombre.trim();
+            if (descripcion) req.body.descripcion = descripcion.trim();
+
+            next();
+        }
     }
 }
 
