@@ -17,8 +17,36 @@ exports.getPacientes = async (req, res) => {
 }
 
 // Obtener paciente por id
+exports.getPacienteById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const paciente = await service.getPacienteById(id);
+
+        respuesta.success(req, res, paciente, 200);
+    } catch (error) {
+        if (error.name === 'NotFoundError') {
+            return respuesta.error(req, res, 'Paciente no encontrado', 404);
+        }
+        respuesta.error(req, res, error.message, 500);
+    }
+};
 
 // Agregar paciente
+exports.addPaciente = async (req, res) => {
+    try {
+        const newPaciente = req.body;
+        const pacienteCreado = await service.addPaciente(newPaciente);
+        respuesta.success(req, res, {
+            message: 'Paciente agregado exitosamente',
+            data: pacienteCreado
+        }, 201);
+    } catch (error) {
+        if (error.name === 'ValidationError' || error.name === 'DuplicateError') {
+            return respuesta.error(req, res, error.message, 400);
+        }
+        respuesta.error(req, res, 'Error al agregar paciente', 500);
+    }
+};
 
 // Update paciente
 exports.updatePaciente = async (req, res) => {

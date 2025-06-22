@@ -19,3 +19,11 @@ exports.getPacientes = async (pagination = {}) => {
 exports.updatePaciente = async (id, updatedData) => {
     return await model.update(id, updatedData);
 }
+
+exports.getPacienteById = async (id) => {
+    return await model.getById(id);
+};
+
+exports.addPaciente = async (pacienteData) => {
+    return await model.create(pacienteData);
+};
