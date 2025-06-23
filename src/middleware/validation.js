@@ -563,6 +563,271 @@ const validation = {
 
             next();
         }
+    },
+
+    atencion: {
+        validateCreate: async (req, res, next) => {
+            const {
+                paciente,
+                historial,
+                cita,
+                tipo_atencion,
+                consultorio,
+                direccion_domicilio,
+                fecha_atencion,
+                doctor,
+                diagnostico,
+                observaciones,
+                peso,
+                altura,
+                total,
+                tipo_pago,
+                codigo_operacion
+            } = req.body;
+
+            const errors = [];
+
+            if (!paciente) errors.push('Paciente es obligatorio');
+            if (!historial) errors.push('Historial es obligatorio');
+            if (!cita) errors.push('Cita es obligatoria');
+            if (!['AD', 'AC'].includes(tipo_atencion)) errors.push('Tipo de atención debe ser AD o AC');
+            if (!consultorio || isNaN(consultorio)) errors.push('Consultorio es obligatorio y debe ser numérico');
+            if (!fecha_atencion) errors.push('Fecha de atención es obligatoria');
+            if (!doctor) errors.push('Doctor es obligatorio');
+            if (total == undefined || isNaN(total) || parseFloat(total) < 0)
+                errors.push('Total es obligatorio y debe ser mayor o igual a 0');
+            if (!tipo_pago) errors.push('Tipo de pago es obligatorio');
+
+            if (peso != undefined && (isNaN(peso) || parseFloat(peso) < 0))
+                errors.push('Peso debe ser un número válido');
+            if (altura != undefined && (isNaN(altura) || parseFloat(altura) < 0))
+                errors.push('Altura debe ser un número válido');
+
+            if (errors.length > 0) {
+                return respuesta.error(req, res, {
+                    error: 'Datos inválidos',
+                    details: errors
+                }, 400);
+            }
+
+            try {
+                const pacienteModel = require('../models/paciente_model');
+                const doctorModel = require('../models/doctor_model');
+                const tipoModel = require('../models/tipo_general_model');
+                const historialModel = require('../models/historial_model');
+                const citaModel = require('../models/cita_model');
+
+                const pacienteResult = await pacienteModel.findByNameOrId(paciente);
+                const doctorResult = await doctorModel.findByNameOrId(doctor);
+                const tipoPagoResult = await tipoModel.findByNameOrCode(tipo_pago);
+                const historialResult = await historialModel.findById(historial);
+                const citaResult = await citaModel.findById(cita);
+
+                if (!pacienteResult) return respuesta.error(req, res, `Paciente '${paciente}' no encontrado`, 404);
+                if (!doctorResult) return respuesta.error(req, res, `Doctor '${doctor}' no encontrado`, 404);
+                if (!tipoPagoResult) return respuesta.error(req, res, `Tipo de pago '${tipo_pago}' no encontrado`, 404);
+                if (!historialResult) return respuesta.error(req, res, `Historial '${historial}' no encontrado`, 404);
+                if (!citaResult) return respuesta.error(req, res, `Cita '${cita}' no encontrada`, 404);
+
+                // Reemplazar campos
+                req.body.id_paciente = pacienteResult.id;
+                req.body.id_doctor = doctorResult.id;
+                req.body.id_tipo_pago = tipoPagoResult.id;
+                req.body.id_historial = historialResult.id;
+                req.body.id_cita = citaResult.id;
+
+                // Limpieza
+                delete req.body.paciente;
+                delete req.body.doctor;
+                delete req.body.tipo_pago;
+                delete req.body.historial;
+                delete req.body.cita;
+
+                req.body.total = parseFloat(total);
+                if (peso) req.body.peso = parseFloat(peso);
+                if (altura) req.body.altura = parseFloat(altura);
+
+            } catch (error) {
+                return respuesta.error(req, res, 'Error al validar datos de atención', 500);
+            }
+
+            next();
+        },
+
+        validateUpdate: async (req, res, next) => {
+            const {
+                paciente,
+                historial,
+                cita,
+                tipo_atencion,
+                consultorio,
+                direccion_domicilio,
+                fecha_atencion,
+                doctor,
+                diagnostico,
+                observaciones,
+                peso,
+                altura,
+                total,
+                tipo_pago,
+                codigo_operacion
+            } = req.body;
+
+            const errors = [];
+
+            if (tipo_atencion && !['AD', 'AC'].includes(tipo_atencion))
+                errors.push('Tipo de atención debe ser AD o AC');
+
+            if (consultorio && isNaN(consultorio))
+                errors.push('Consultorio debe ser numérico');
+
+            if (peso != undefined && (isNaN(peso) || parseFloat(peso) < 0))
+                errors.push('Peso debe ser un número válido');
+
+            if (altura != undefined && (isNaN(altura) || parseFloat(altura) < 0))
+                errors.push('Altura debe ser un número válido');
+
+            if (total != undefined && (isNaN(total) || parseFloat(total) < 0))
+                errors.push('Total debe ser un número válido');
+
+            if (errors.length > 0) {
+                return respuesta.error(req, res, {
+                    error: 'Datos inválidos',
+                    details: errors
+                }, 400);
+            }
+
+            try {
+                const pacienteModel = require('../models/paciente_model');
+                const doctorModel = require('../models/doctor_model');
+                const tipoModel = require('../models/tipo_general_model');
+                const historialModel = require('../models/historial_model');
+                const citaModel = require('../models/cita_model');
+
+                if (paciente) {
+                    const p = await pacienteModel.findByNameOrId(paciente);
+                    if (!p) return respuesta.error(req, res, `Paciente '${paciente}' no encontrado`, 404);
+                    req.body.id_paciente = p.id;
+                    delete req.body.paciente;
+                }
+
+                if (doctor) {
+                    const d = await doctorModel.findByNameOrId(doctor);
+                    if (!d) return respuesta.error(req, res, `Doctor '${doctor}' no encontrado`, 404);
+                    req.body.id_doctor = d.id;
+                    delete req.body.doctor;
+                }
+
+                if (tipo_pago) {
+                    const t = await tipoModel.findByNameOrCode(tipo_pago);
+                    if (!t) return respuesta.error(req, res, `Tipo de pago '${tipo_pago}' no encontrado`, 404);
+                    req.body.id_tipo_pago = t.id;
+                    delete req.body.tipo_pago;
+                }
+
+                if (historial) {
+                    const h = await historialModel.findById(historial);
+                    if (!h) return respuesta.error(req, res, `Historial '${historial}' no encontrado`, 404);
+                    req.body.id_historial = h.id;
+                    delete req.body.historial;
+                }
+
+                if (cita) {
+                    const c = await citaModel.findById(cita);
+                    if (!c) return respuesta.error(req, res, `Cita '${cita}' no encontrada`, 404);
+                    req.body.id_cita = c.id;
+                    delete req.body.cita;
+                }
+
+                if (total) req.body.total = parseFloat(total);
+                if (peso) req.body.peso = parseFloat(peso);
+                if (altura) req.body.altura = parseFloat(altura);
+
+            } catch (error) {
+                return respuesta.error(req, res, 'Error al procesar actualización de atención', 500);
+            }
+
+            next();
+        }
+    },
+
+    consultorio: {
+        validateCreate: async (req, res, next) => {
+            const { nombre, ubigeo } = req.body;
+            const errors = [];
+
+            if (!nombre || nombre.trim().length < 2) {
+                errors.push('Nombre es obligatorio y debe tener al menos 2 caracteres');
+            }
+
+            if (!ubigeo || typeof ubigeo !== 'string') {
+                errors.push('Ubigeo es obligatorio y debe ser un texto válido');
+            }
+
+            if (errors.length > 0) {
+                return respuesta.error(req, res, {
+                    error: 'Datos de entrada inválidos',
+                    details: errors
+                }, 400);
+            }
+
+            try {
+                const ubigeoModel = require('../models/ubigeo_model'); // asegúrate de tener este model
+                const result = await ubigeoModel.findByNameOrCode(ubigeo);
+
+                if (!result) {
+                    return respuesta.error(req, res, `Ubigeo '${ubigeo}' no encontrado`, 404);
+                }
+
+                req.body.id_ubigeo = result.id;
+                delete req.body.ubigeo;
+                req.body.nombre = nombre.trim();
+            } catch (error) {
+                return respuesta.error(req, res, 'Error al procesar los datos', 500);
+            }
+
+            next();
+        },
+
+        validateUpdate: async (req, res, next) => {
+            const { nombre, ubigeo } = req.body;
+            const errors = [];
+
+            if (nombre && nombre.trim().length < 2) {
+                errors.push('Nombre debe tener al menos 2 caracteres');
+            }
+
+            if (ubigeo && typeof ubigeo !== 'string') {
+                errors.push('Ubigeo debe ser una cadena de texto válida');
+            }
+
+            if (errors.length > 0) {
+                return respuesta.error(req, res, {
+                    error: 'Datos de entrada inválidos',
+                    details: errors
+                }, 400);
+            }
+
+            try {
+                if (ubigeo) {
+                    const ubigeoModel = require('../models/ubigeo_model');
+                    const result = await ubigeoModel.findByNameOrCode(ubigeo);
+
+                    if (!result) {
+                        return respuesta.error(req, res, `Ubigeo '${ubigeo}' no encontrado`, 404);
+                    }
+
+                    req.body.id_ubigeo = result.id;
+                    delete req.body.ubigeo;
+                }
+
+                if (nombre) req.body.nombre = nombre.trim();
+            } catch (error) {
+                return respuesta.error(req, res, 'Error al procesar los datos', 500);
+            }
+
+            next();
+        }
     }
 }
 
