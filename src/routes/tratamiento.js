@@ -9,4 +9,4 @@ router.post('/tratamiento', validation.tratamiento.validateCreate, controller.ad
 router.delete('/tratamiento/:id', validation.validateId('id'), controller.deleteTratamiento);
 router.put('/tratamiento/:id', validation.validateId('id'), validation.tratamiento.validateUpdate, controller.updateTratamiento);
 
-module.exports = router;ss
+module.exports = router;

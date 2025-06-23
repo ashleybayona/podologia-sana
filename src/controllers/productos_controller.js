@@ -48,3 +48,17 @@ exports.updateProducto = async (req, res) => {
         respuesta.error(req, res, error.message, 500);
     }
 }
+
+// Eliminar producto (cambio de estado a inactivo)
+exports.deleteProducto = async (req, res) => {
+    try {
+        const { id } = req.params;
+        await service.deleteProducto(id);
+        respuesta.success(req, res, {
+            message: 'Producto eliminado (estado inactivo)',
+            id
+        }, 200);
+    } catch (error) {
+        respuesta.error(req, res, error.message, 500);
+    }
+}

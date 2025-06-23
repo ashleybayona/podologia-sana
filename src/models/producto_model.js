@@ -73,3 +73,13 @@ exports.update = async (id, productoData) => {
         throw error;
     }
 }
+
+exports.delete = async (id) => {
+    const query = `CALL sp_eliminar_producto(?)`;
+    try {
+        const [result] = await db.query(query, [id]);
+        return { id };
+    } catch (error) {
+        throw error;
+    }
+}
