@@ -23,3 +23,7 @@ exports.createProducto = async (productoData) => {
 exports.updateProducto = async (id, productoData) => {
     return await model.update(id, productoData);
 }
+
+exports.deleteProducto = async (id) => {
+    return await model.delete(id);
+}
