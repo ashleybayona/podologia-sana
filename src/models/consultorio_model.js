@@ -1,7 +1,7 @@
 const db = require('../config/db');
 
 exports.getAll = async () => {
-    const query = `SELECT * FROM consultorio`;
+    const query = `SELECT * FROM view_consultorio`;
     const [result] = await db.query(query);
     return result;
 };
