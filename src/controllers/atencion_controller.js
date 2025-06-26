@@ -1,14 +1,13 @@
 const service = require('../services/atencion_service');
 const respuesta = require('../util/respuestas');
 
-// Obtener todas las citas 
-exports.getCitas = async (req, res) => {
+exports.getAtenciones = async (req, res) => {
     try {
         const pagination = {
             page: req.query.page || 1,
             limit: req.query.limit || 100
         };
-        const result = await service.getCitas(pagination);
+        const result = await service.getAtenciones(pagination);
 
         respuesta.success(req, res, result, 200);
     } catch (error) {
