@@ -1,5 +1,21 @@
 const model = require('../models/atencion_model');
 
+exports.getAtenciones = async (pagination = {}) => {
+    const { page, limit } = pagination;
+    const atenciones = await model.getAllAtenciones(pagination);
+    const total = await model.countAll();
+
+    return {
+        data: atenciones,
+        pagination: {
+            current_page: page,
+            total_pages: Math.ceil(total / limit),
+            total_records: total,
+            per_page: limit
+        }
+    };
+}
+
 exports.createAtencion = async (data) => {
     return await model.create(data);
 }

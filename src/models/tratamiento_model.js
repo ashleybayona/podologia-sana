@@ -30,13 +30,20 @@ exports.create = async (tratamientoData) => {
 }
 
 exports.update = async (id, tratamientoData) => {
+    // Validar que al menos uno de los campos esté presente
+    if (tratamientoData.nombre === undefined && tratamientoData.descripcion === undefined) {
+        const error = new Error('Debe proporcionar al menos un campo para actualizar.');
+        error.name = 'ValidationError';
+        throw error;
+    }
+
     const query = `
         CALL sp_actualizar_tratamiento(?, ?, ?)
     `;
     const params = [
         id,
-        tratamientoData.nombre,
-        tratamientoData.descripcion
+        tratamientoData.nombre || null,
+        tratamientoData.descripcion || null
     ];
 
     try {

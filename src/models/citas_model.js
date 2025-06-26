@@ -22,8 +22,8 @@ exports.countAll = async () => {
 }
 
 exports.update = async (id, updatedData) => {
-    // Validar que todos los campos requeridos estén presentes
-    const requiredFields = [
+    // Validar que al menos un campo haya sido proporcionado
+    const allowedFields = [
         'id_tipo_cita',
         'id_paciente',
         'id_consultorio',
@@ -34,28 +34,26 @@ exports.update = async (id, updatedData) => {
         'id_doctor'
     ];
 
-    const missingFields = requiredFields.filter(field => updatedData[field] === undefined || updatedData[field] === null);
+    const fieldsToUpdate = allowedFields.filter(field => updatedData[field] !== undefined);
 
-    if (missingFields.length > 0) {
-        const error = new Error(`Faltan campos obligatorios: ${missingFields.join(', ')}`);
+    if (fieldsToUpdate.length === 0) {
+        const error = new Error('Debe proporcionar al menos un campo para actualizar.');
         error.name = 'ValidationError';
         throw error;
     }
 
-    const query = `
-        CALL sp_actualizar_cita(?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
+    const query = `CALL sp_actualizar_cita(?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
     const params = [
         id,
-        updatedData.id_tipo_cita,
-        updatedData.id_paciente,
-        updatedData.id_consultorio,
-        updatedData.fecha,
-        updatedData.hora,
-        updatedData.motivo,
-        updatedData.id_tipo_estado,
-        updatedData.id_doctor
+        updatedData.id_tipo_cita || null,
+        updatedData.id_paciente || null,
+        updatedData.id_consultorio || null,
+        updatedData.fecha || null,
+        updatedData.hora || null,
+        updatedData.motivo || null,
+        updatedData.id_tipo_estado || null,
+        updatedData.id_doctor || null
     ];
 
     try {
