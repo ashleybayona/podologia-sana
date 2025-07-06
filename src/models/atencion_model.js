@@ -4,7 +4,7 @@ const db = require('../config/db');
 exports.getAllAtenciones = async (pagination = {}) => {
     const { page, limit } = pagination;
     const query = `
-        SELECT * FROM view_Atenciones
+        SELECT * FROM view_atenciones
     `;
 
     const offset = (page - 1) * limit;
@@ -110,4 +110,19 @@ exports.update = async (id, data) => {
 exports.delete = async (id) => {
     const [result] = await db.query(`CALL sp_eliminar_atencion(?)`, [id]);
     return { id };
+}
+
+exports.getAtencionPorNombres = async (paciente, doctor) => {
+    const nombrePaciente = (paciente || '').toLowerCase();
+    const nombreDoctor = (doctor || '').toLowerCase();
+
+    const query = `
+        SELECT * FROM view_atenciones
+        WHERE LOWER(nombre_paciente) LIKE ?
+        AND LOWER(nombre_doctor) LIKE ?
+    `;
+    const params = [`%${nombrePaciente}%`, `%${nombreDoctor}%`];
+
+    const [result] = await db.query(query, params);
+    return result[0];
 }

@@ -27,3 +27,7 @@ exports.updateAtencion = async (id, data) => {
 exports.deleteAtencion = async (id) => {
     return await model.delete(id);
 }
+
+exports.getAtencionPorNombres = async (data) => {
+    return await model.getAtencionPorNombres(data);
+}

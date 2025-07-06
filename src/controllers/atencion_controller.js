@@ -43,3 +43,14 @@ exports.deleteAtencion = async (req, res) => {
         respuesta.error(req, res, error.message, 500);
     }
 }
+
+exports.getAtencionPorNombres = async (req, res) => {
+    try {
+        const { nombre_paciente = '', nombre_doctor = '' } = req.query;
+
+        const result = await service.getAtencionPorNombres(nombre_paciente, nombre_doctor);
+        respuesta.success(req, res, result, 200);
+    } catch (error) {
+        respuesta.error(req, res, error.message, 500);
+    }
+}
