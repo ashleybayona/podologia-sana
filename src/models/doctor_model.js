@@ -115,6 +115,5 @@ exports.getAtencionesByDoctor = async (doctorId) => {
         WHERE id_doctor = ?
     `;
     const [result] = await db.query(query, [doctorId]);
-    console.log(result);
     return result;
 }

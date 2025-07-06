@@ -66,3 +66,13 @@ exports.getTopMasRecientes = async (req, res) => {
         respuesta.error(req, res, error.message, 500);
     }
 }
+
+exports.getAtencionesByPaciente = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const atenciones = await service.getAtencionesByPaciente(id);
+        respuesta.success(req, res, atenciones, 200);
+    } catch (error) {
+        respuesta.error(req, res, error.message, 500);
+    }
+}

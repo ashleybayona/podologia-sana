@@ -10,5 +10,6 @@ router.put('/paciente/:id', validation.validateId('id'), validation.paciente.val
 router.get('/paciente/:id', validation.validateId('id'), controller.getPacienteById);
 router.post('/paciente', validation.paciente.validateCreate, controller.addPaciente);
 router.get('/pacientes/recientes', controller.getTopMasRecientes);
+router.get('/paciente/:id/atenciones', validation.validateId('id'), controller.getAtencionesByPaciente);
 
 module.exports = router;

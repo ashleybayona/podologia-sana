@@ -31,3 +31,7 @@ exports.addPaciente = async (pacienteData) => {
 exports.getTopMasRecientes = async () => {
     return await model.topMasRecientes();
 }
+
+exports.getAtencionesByPaciente = async (idPaciente) => {
+    return await model.getAtencionesByPaciente(idPaciente);
+}

@@ -125,3 +125,12 @@ exports.topMasRecientes = async () => {
     const [result] = await db.query(query)
     return result;
 }
+
+exports.getAtencionesByPaciente = async (id_paciente) => {
+    const query = `
+        SELECT * FROM view_atenciones 
+        WHERE id_paciente = ?
+    `;
+    const [result] = await db.query(query, [id_paciente]);
+    return result;
+}
