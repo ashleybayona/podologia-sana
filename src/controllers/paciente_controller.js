@@ -52,3 +52,17 @@ exports.updatePaciente = async (req, res) => {
         respuesta.error(req, res, error.message, 500);
     }
 }
+
+exports.getTopMasRecientes = async (req, res) => {
+    try {
+        const pacientes = await service.getTopMasRecientes();
+
+        if (pacientes.length === 0) {
+            return respuesta.success(req, res, { message: "No hay pacientes recientes" }, 200);
+        }
+
+        respuesta.success(req, res, pacientes, 200);
+    } catch (error) {
+        respuesta.error(req, res, error.message, 500);
+    }
+}
