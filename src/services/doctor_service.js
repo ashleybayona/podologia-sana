@@ -63,3 +63,8 @@ exports.deleteDoctor = async (id) => {
     return message;
 }
 
+exports.getAtencionesByDoctor = async (doctorId) => {
+    const atenciones = await model.getAtencionesByDoctor(doctorId);
+    if (!atenciones) throw new NotFoundError('No se encontraron atenciones para este doctor');
+    return atenciones;
+}
