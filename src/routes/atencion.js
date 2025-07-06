@@ -8,5 +8,9 @@ router.post('/atencion', validation.atencion.validateCreate, controller.addAtenc
 router.put('/atencion/:id', validation.validateId('id'), validation.atencion.validateUpdate, controller.updateAtencion);
 router.delete('/atencion/:id', validation.validateId('id'), controller.deleteAtencion);
 router.get('/atencion/nombres', controller.getAtencionPorNombres);
+router.get('/atencion/reporte-mensual', controller.getReporteMensual);
+router.get('/atencion/reporte-doctor-atenciones', controller.getReporteDoctorAtenciones);
+router.get('/atencion/reporte-tipo-atencion', controller.getReporteTipoAtencion);
+router.get('/atencion/ranking-tratamientos', controller.getRankingTratamientos);
 
 module.exports = router;
