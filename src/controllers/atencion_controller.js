@@ -55,42 +55,6 @@ exports.getAtencionPorNombres = async (req, res) => {
     }
 }
 
-exports.getReporteMensual = async (req, res) => {
-    try {
-        const result = await service.getReporteMensual();
-        respuesta.success(req, res, result, 200);
-    } catch (error) {
-        respuesta.error(req, res, error.message, 500);
-    }
-}
-
-exports.getReporteDoctorAtenciones = async (req, res) => {
-    try {
-        const result = await service.getReporteDoctorAtenciones();
-        respuesta.success(req, res, result, 200);
-    } catch (error) {
-        respuesta.error(req, res, error.message, 500);
-    }
-}
-
-exports.getReporteTipoAtencion = async (req, res) => {
-    try {
-        const result = await service.getReporteTipoAtencion();
-        respuesta.success(req, res, result, 200);
-    } catch (error) {
-        respuesta.error(req, res, error.message, 500);
-    }
-}
-
-exports.getRankingTratamientos = async (req, res) => {
-    try {
-        const result = await service.getRankingTratamientos();
-        respuesta.success(req, res, result, 200);
-    } catch (error) {
-        respuesta.error(req, res, error.message, 500);
-    }
-}
-
 exports.getAtencionByCita = async (req, res) => {
     try {
         const { id } = req.params;
