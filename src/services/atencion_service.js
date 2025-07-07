@@ -27,3 +27,27 @@ exports.updateAtencion = async (id, data) => {
 exports.deleteAtencion = async (id) => {
     return await model.delete(id);
 }
+
+exports.getAtencionPorNombres = async (data) => {
+    return await model.getAtencionPorNombres(data);
+}
+
+exports.getReporteMensual = async () => {
+    return await model.getReporteMensual();
+}
+
+exports.getReporteDoctorAtenciones = async () => {
+    return await model.getReporteDoctorAtenciones();
+}
+
+exports.getReporteTipoAtencion = async () => {
+    return await model.getReporteTipoAtencion();
+}
+
+exports.getRankingTratamientos = async () => {
+    return await model.getRankingTratamientos();
+}
+
+exports.getAtencionByCita = async (id_cita) => {
+    return await model.getAtencionByCita(id_cita);
+}

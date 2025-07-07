@@ -4,7 +4,7 @@ const db = require('../config/db');
 exports.getAllAtenciones = async (pagination = {}) => {
     const { page, limit } = pagination;
     const query = `
-        SELECT * FROM view_Atenciones
+        SELECT * FROM view_atenciones
     `;
 
     const offset = (page - 1) * limit;
@@ -110,4 +110,71 @@ exports.update = async (id, data) => {
 exports.delete = async (id) => {
     const [result] = await db.query(`CALL sp_eliminar_atencion(?)`, [id]);
     return { id };
+}
+
+exports.getAtencionPorNombres = async (paciente, doctor) => {
+    const nombrePaciente = (paciente || '').toLowerCase();
+    const nombreDoctor = (doctor || '').toLowerCase();
+
+    const query = `
+        SELECT * FROM view_atenciones
+        WHERE LOWER(nombre_paciente) LIKE ?
+        AND LOWER(nombre_doctor) LIKE ?
+    `;
+    const params = [`%${nombrePaciente}%`, `%${nombreDoctor}%`];
+
+    const [result] = await db.query(query, params);
+    return result[0];
+}
+
+exports.getReporteMensual = async () => {
+    const query = `
+        SELECT * FROM view_reporte_atenciones_mensuales
+        ORDER BY mes DESC;
+    `;
+    const [result] = await db.query(query);
+    return result;
+}
+//desdeaka
+exports.getReporteDoctorAtenciones = async () => {
+    const query = `
+        SELECT * FROM view_reporte_doctor_atenciones
+        ORDER BY total_atenciones DESC;
+    `;
+    const [result] = await db.query(query);
+    return result;   
+}
+
+exports.getReporteTipoAtencion = async () => {
+    const query = `
+        SELECT * FROM view_reporte_tipo_atencion
+        ORDER BY total_atenciones DESC;
+    `;
+    const [result] = await db.query(query);
+    return result;
+}
+
+exports.getRankingTratamientos = async () => {
+    const query = `
+        SELECT * FROM view_ranking_tratamientos
+        ORDER BY veces_usado DESC;
+    `;
+    const [result] = await db.query(query);
+    return result;
+}
+
+exports.getAtencionByCita = async (id_cita) => {
+    const query = `
+        SELECT * FROM view_atenciones
+        WHERE id_cita = ?;
+    `;
+    const [result] = await db.query(query, [id_cita]);
+    
+    if (result.length === 0) {
+        const error = new Error('Atención no encontrada');
+        error.name = 'NotFoundError';
+        throw error;
+    }
+    
+    return result[0];
 }
