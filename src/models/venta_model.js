@@ -31,12 +31,18 @@ exports.create = async (data) => {
         data.id_paciente,
         data.id_tipo_pago,
         data.codigo_operacion,
-        data.detalles
+        JSON.stringify(data.detalles) 
     ];
 
     try {
         const [result] = await db.query(query, params);
-        return result[0][0];
+        const detalleVenta = result[0].map(item => ({
+            ...item,
+            precio_unitario: parseFloat(item.precio_unitario),
+            subtotal: parseFloat(item.subtotal),
+        })); 
+
+        return detalleVenta;
     } catch (error) {
         if (error.message.includes('Venta no encontrada')) {
             const customError = new Error(error.message);
