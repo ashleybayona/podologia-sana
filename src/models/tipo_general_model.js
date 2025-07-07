@@ -119,7 +119,7 @@ exports.deleteRol = async (id) => {
         const [result] = await db.query(query, [id]);
         return result[0][0];
     }catch (error) {
-        throw new Error('Error al eliminar rol', error);
+        throw new Error(`Error al eliminar rol: ${error.message || error}`);
     }
 }
 
