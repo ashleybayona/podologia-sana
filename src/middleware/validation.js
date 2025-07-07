@@ -828,7 +828,50 @@ const validation = {
 
             next();
         }
-    }
+    }, 
+
+    venta: {
+        validateCreate: async (req, res, next) => {
+            const { id_paciente, tipo_pago, codigo_operacion, detalles } = req.body;
+            const errors = [];
+
+            if (!id_paciente) {
+                errors.push('ID de paciente es obligatorio');
+            }
+
+            if (!tipo_pago) {
+                errors.push('Tipo de pago es obligatorio');
+            }
+
+            if (!detalles || !Array.isArray(detalles) || detalles.length === 0) {
+                errors.push('Detalles son obligatorios y deben ser un arreglo');
+            }
+
+            if (errors.length > 0) {
+                return respuesta.error(req, res, {
+                    error: 'Datos de entrada inválidos',
+                    details: errors
+                }, 400);
+            }
+
+            // convertir tipo_pago a id_tipo_pago
+            try {
+                const tipoModel = require('../models/tipo_general_model');
+                const tipo = await tipoModel.findByNameOrCode(tipo_pago);
+
+                if (!tipo) {
+                    return respuesta.error(req, res, `Tipo de pago '${tipo_pago}' no encontrado`, 404);
+                }
+
+                req.body.id_tipo_pago = tipo.id;
+                delete req.body.tipo_pago; 
+            } catch (error) {
+                return respuesta.error(req, res, 'Error al procesar los datos', 500);
+            }
+            
+            next();
+        },
+    },
 }
 
 module.exports = validation;
