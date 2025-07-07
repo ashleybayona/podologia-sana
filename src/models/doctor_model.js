@@ -108,3 +108,12 @@ exports.delete = async (id) => {
         throw error;
     }
 }
+
+exports.getAtencionesByDoctor = async (doctorId) => {
+    const query = `
+        SELECT * FROM view_atenciones
+        WHERE id_doctor = ?
+    `;
+    const [result] = await db.query(query, [doctorId]);
+    return result;
+}

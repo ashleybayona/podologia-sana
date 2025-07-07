@@ -113,3 +113,25 @@ exports.create = async (pacienteData) => {
         throw error;
     }
 };
+
+
+exports.topMasRecientes = async () => {
+    const query = `
+        select DISTINCT nombre_paciente, max(fecha_atencion) as ultima_fecha from view_atenciones
+        group by nombre_paciente
+        order by ultima_fecha DESC
+        limit 3
+    `;
+    const [result] = await db.query(query)
+    return result;
+}
+
+exports.getAtencionesByPaciente = async (id_paciente) => {
+    const query = `
+        SELECT * FROM view_historial_clinico_resumido 
+        WHERE id_paciente = ?
+        ORDER BY fecha_atencion DESC
+    `;
+    const [result] = await db.query(query, [id_paciente]);
+    return result;
+}
