@@ -19,3 +19,43 @@ exports.getCategoriasProducto = async () => {
 
     return categorias;
 }
+
+exports.getTiposPie = async () => {
+    const tiposPie = await model.getAllTiposPie();
+    
+    if (!tiposPie || tiposPie.length === 0) {
+        throw new NotFoundError('No se encontraron tipos de pie');
+    }
+
+    return tiposPie;
+}
+
+exports.getEstadosCita = async () => {
+    const estados = await model.getAllEstadosCita();
+    
+    if (!estados || estados.length === 0) {
+        throw new NotFoundError('No se encontraron estados de cita');
+    }
+
+    return estados;
+}
+
+exports.getMetodosPago = async () => {
+    const metodos = await model.getAllMetodosPago();
+
+    if (!metodos || metodos.length === 0) {
+        throw new NotFoundError('No se encontraron métodos de pago');
+    }
+
+    return metodos;
+}
+
+exports.getRoles = async () => {
+    const roles = await model.getAllRoles();
+
+    if (!roles || roles.length === 0) {
+        throw new NotFoundError('No se encontraron roles');
+    }
+
+    return roles;
+}
