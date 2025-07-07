@@ -90,3 +90,14 @@ exports.getRankingTratamientos = async (req, res) => {
         respuesta.error(req, res, error.message, 500);
     }
 }
+
+exports.getAtencionByCita = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const atencion = await service.getAtencionByCita(id);
+
+        respuesta.success(req, res, atencion, 200);
+    } catch (error) {
+        respuesta.error(req, res, error.message, 500);
+    }
+}

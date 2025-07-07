@@ -162,3 +162,19 @@ exports.getRankingTratamientos = async () => {
     const [result] = await db.query(query);
     return result;
 }
+
+exports.getAtencionByCita = async (id_cita) => {
+    const query = `
+        SELECT * FROM view_atenciones
+        WHERE id_cita = ?;
+    `;
+    const [result] = await db.query(query, [id_cita]);
+    
+    if (result.length === 0) {
+        const error = new Error('Atención no encontrada');
+        error.name = 'NotFoundError';
+        throw error;
+    }
+    
+    return result[0];
+}

@@ -12,5 +12,6 @@ router.get('/atencion/reporte-mensual', controller.getReporteMensual);
 router.get('/atencion/reporte-doctor-atenciones', controller.getReporteDoctorAtenciones);
 router.get('/atencion/reporte-tipo-atencion', controller.getReporteTipoAtencion);
 router.get('/atencion/ranking-tratamientos', controller.getRankingTratamientos);
+router.get('/atencion/cita/:id', validation.validateId('id'), controller.getAtencionByCita);
 
 module.exports = router;

@@ -47,3 +47,7 @@ exports.getReporteTipoAtencion = async () => {
 exports.getRankingTratamientos = async () => {
     return await model.getRankingTratamientos();
 }
+
+exports.getAtencionByCita = async (id_cita) => {
+    return await model.getAtencionByCita(id_cita);
+}
