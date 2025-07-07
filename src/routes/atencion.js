@@ -14,4 +14,17 @@ router.get('/atencion/reporte-tipo-atencion', controller.getReporteTipoAtencion)
 router.get('/atencion/ranking-tratamientos', controller.getRankingTratamientos);
 router.get('/atencion/cita/:id', validation.validateId('id'), controller.getAtencionByCita);
 
+// Relación ATENCIÓN - AFECCIÓN
+router.post('/atencion/afeccion', validation.atencion.validateRelacionAA, controller.addAtencionAfeccion);
+router.delete('/atencion/afeccion', validation.atencion.validateRelacionAA, controller.deleteAtencionAfeccion);
+
+// Relación ATENCIÓN - FOTO
+router.post('/atencion/foto', validation.atencion.validateRelacionAF, controller.addAtencionFoto);
+router.delete('/atencion/foto', validation.atencion.validateRelacionAF, controller.deleteAtencionFoto);
+
+// Relación ATENCIÓN - TRATAMIENTO
+router.post('/atencion/tratamiento', validation.atencion.validateRelacionAT, controller.addAtencionTratamiento);
+router.delete('/atencion/tratamiento', validation.atencion.validateRelacionAT, controller.deleteAtencionTratamiento);
+
+
 module.exports = router;

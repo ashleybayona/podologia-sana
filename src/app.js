@@ -16,6 +16,7 @@ const atencion = require("./routes/atencion");
 const consultorio = require("./routes/consultorio");
 const venta = require("./routes/venta");
 const atencion = require("./routes/venta");
+const foto = require("./routes/foto");
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use("/", tratamiento);
 app.use("/", atencion);
 app.use("/", consultorio);
 app.use("/", venta);
+app.use("/", foto);
 
 // para que index.js pueda acceder a la app
 module.exports = app;

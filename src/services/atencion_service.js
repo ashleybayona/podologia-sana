@@ -51,3 +51,27 @@ exports.getRankingTratamientos = async () => {
 exports.getAtencionByCita = async (id_cita) => {
     return await model.getAtencionByCita(id_cita);
 }
+
+exports.createAtencionA = async (data) => {
+    return await model.createAA(data);
+}
+
+exports.deleteAtencionA = async (data) => {
+    return await model.deleteAA(data);
+}
+
+exports.createAtencionF = async (data) => {
+    return await model.createAF(data);
+}
+
+exports.deleteAtencionF = async (data) => {
+    return await model.deleteAF(data);
+}
+
+exports.createAtencionT = async (data) => {
+    return await model.createAT(data);
+}
+
+exports.deleteAtencionT = async (data) => {
+    return await model.deleteAT(data);
+}

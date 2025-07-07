@@ -1,5 +1,7 @@
 const db = require('../config/db');
 
+// ATENCION
+
 // Obtener todas las atenciones
 exports.getAllAtenciones = async (pagination = {}) => {
     const { page, limit } = pagination;
@@ -178,3 +180,99 @@ exports.getAtencionByCita = async (id_cita) => {
     
     return result[0];
 }
+
+// ATENCION_AFECCION
+
+exports.createAA = async (data) => {
+    const query = `
+        CALL sp_crear_atencionafeccion(?, ?)
+    `;
+    const params = [
+        data.id_atencion,
+        data.id_afeccion
+    ];
+
+    try {
+        const [resultado] = await db.query(query, params);
+        const result = result[0][0];
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+exports.deleteAA = async (data) => {
+    const query = `CALL sp_eliminar_atencionafeccion(?, ?)`;
+    const params = [data.id_atencion, data.id_afeccion];
+
+    try {
+        const [result] = await db.query(query, params);
+        return result[0][0]; // si tu SP devuelve un mensaje
+    } catch (error) {
+        throw error;
+    }
+};
+
+// ATENCION_FOTO
+
+exports.createAF = async (data) => {
+    const query = `
+        CALL sp_crear_atencionfoto(?, ?)
+    `;
+    const params = [
+        data.id_atencion,
+        data.id_foto
+    ];
+
+    try {
+        const [resultado] = await db.query(query, params);
+        const result = result[0][0];
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+exports.deleteAF = async (data) => {
+    const query = `CALL sp_eliminar_atencionfoto(?, ?)`;
+    const params = [data.id_atencion, data.id_foto];
+
+    try {
+        const [result] = await db.query(query, params);
+        return result[0][0]; 
+    } catch (error) {
+        throw error;
+    }
+};
+
+// ATENCION_TRATAMIENTO
+
+exports.createAT = async (data) => {
+    const query = `
+        CALL sp_crear_atenciontratamiento(?, ?)
+    `;
+    const params = [
+        data.id_atencion,
+        data.id_tratamiento
+    ];
+
+    try {
+        const [resultado] = await db.query(query, params);
+        const result = result[0][0];
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+exports.deleteAT = async (data) => {
+    const query = `CALL sp_eliminar_atenciontratamiento(?, ?)`;
+    const params = [data.id_atencion, data.id_tratamiento];
+
+    try {
+        const [result] = await db.query(query, params);
+        return result[0][0];
+    } catch (error) {
+        throw error;
+    }
+};
