@@ -13,6 +13,7 @@ const usuario = require("./routes/usuario");
 const citas = require("./routes/citas");
 const tratamiento = require("./routes/tratamiento");
 const atencion = require("./routes/atencion");
+const atencion = require("./routes/venta");
 const consultorio = require("./routes/consultorio");
 const venta = require("./routes/venta");
 
