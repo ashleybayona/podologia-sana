@@ -872,6 +872,39 @@ const validation = {
             next();
         },
     },
+
+    tipo_general: {
+        validateExisting: async (req, res, next) => {
+            const { nombre } = req.body;
+            const errors = [];
+
+            if (!nombre || nombre.trim().length < 2) {
+                errors.push('Nombre es obligatorio y debe tener al menos 2 caracteres');
+            }
+
+            if (errors.length > 0) {
+                return respuesta.error(req, res, {
+                    error: 'Datos de entrada inválidos',
+                    details: errors
+                }, 400);
+            }
+
+            try {
+                const tipoModel = require('../models/tipo_general_model');
+                const existingTipo = await tipoModel.findByNameOrCode(nombre);
+
+                if (existingTipo) {
+                    return respuesta.error(req, res, `Tipo general con nombre '${nombre}' ya existe`, 409);
+                }
+
+                req.body.nombre = nombre.trim();
+            } catch (error) {
+                return respuesta.error(req, res, 'Error al procesar los datos', 500);
+            }
+            
+            next();
+        }
+    }
 }
 
 module.exports = validation;

@@ -66,31 +66,28 @@ exports.getNameById = async (id) => {
     return result[0] || null;
 }
 
-// DESDE AKA
-exports.addCategoriaProducto = async (nombre) => {
+exports.createCategoriaProducto = async (nombre) => {
     const query = `
         CALL sp_crear_categoria_producto(?);
     `;
 
     try{
         const [result] = await db.query(query, [nombre]);
-        console.log(result);
-        return result;
+        return result[0];
     }catch (error) {
         console.error('Error al agregar categoría de producto:', error);
         return false;
     }
 }
 
-exports.addRol = async (nombre) => {
+exports.createRol = async (nombre) => {
     const query = `
         CALL sp_crear_rol(?);
     `;
 
     try {
         const [result] = await db.query(query, [nombre]);
-        console.log(result);
-        return result;
+        return result[0][0];
     }catch (error) {
         console.error('Error al agregar rol:', error);
         return false;
@@ -105,8 +102,9 @@ exports.deleteCategoriaProducto = async (id) => {
     try {
         const [result] = await db.query(query, [id]);
         console.log(result);
-        return result;
+        return result[0][0];
     }catch (error) {
+        console.log('salioerror')
         console.error('Error al eliminar categoría de producto:', error);
         return false;
     }
@@ -119,10 +117,42 @@ exports.deleteRol = async (id) => {
 
     try {
         const [result] = await db.query(query, [id]);
-        console.log(result);
-        return result;
+        return result[0][0];
     }catch (error) {
-        console.error('Error al eliminar rol:', error);
+        throw new Error('Error al eliminar rol', error);
+    }
+}
+
+exports.updateCategoriaProducto = async (id, nombre) => {
+    const query = `
+        CALL sp_actualizar_categoria_producto(?, ?);
+    `;
+    const params = [
+        id, nombre
+    ];
+
+    try {
+        const [result] = await db.query(query, params);
+        return result[0][0];
+    }catch (error) {
+        console.error('Error al actualizar categoría de producto:', error);
+        return false;
+    }
+}
+
+exports.updateRol = async (id, nombre) => {
+    const query = `
+        CALL sp_actualizar_rol(?, ?);
+    `;
+    const params = [
+        id, nombre
+    ];
+
+    try {
+        const [result] = await db.query(query, params);
+        return result[0][0];
+    }catch (error) {
+        console.error('Error al actualizar rol:', error);
         return false;
     }
 }

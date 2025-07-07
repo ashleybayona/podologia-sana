@@ -54,3 +54,65 @@ exports.getRoles = async (req, res) => {
         respuesta.error(req, res, error.message, 500);
     }
 }
+
+exports.createCategoriaProducto = async (req, res) => {
+    try {
+        const { nombre } = req.body;
+        const newCategoria = await service.createCategoriaProducto(nombre);
+        respuesta.success(req, res, newCategoria, 201);
+    } catch (error) {
+        respuesta.error(req, res, error.message, 500);
+    }
+}
+
+exports.createRol = async (req, res) => {
+    try {
+        const { nombre } = req.body;
+        const newRol = await service.createRol(nombre);
+        respuesta.success(req, res, newRol, 201);
+    } catch (error) {
+        respuesta.error(req, res, error.message, 500);
+    }
+}
+
+exports.deleteCategoriaProducto = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await service.deleteCategoriaProducto(id);
+        respuesta.success(req, res, result, 200);
+    } catch (error) {
+        respuesta.error(req, res, error.message, 500);
+    }
+}
+
+exports.deleteRol = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await service.deleteRol(id);
+        respuesta.success(req, res, result, 200);
+    } catch (error) {
+        respuesta.error(req, res, error.message, 500);
+    }
+}
+
+exports.updateCategoriaProducto = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { nombre } = req.body;
+        const updatedCategoria = await service.updateCategoriaProducto(id, nombre);
+        respuesta.success(req, res, updatedCategoria, 200);
+    } catch (error) {
+        respuesta.error(req, res, error.message, 500);
+    }
+}
+
+exports.updateRol = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { nombre } = req.body;
+        const updatedRol = await service.updateRol(id, nombre);
+        respuesta.success(req, res, updatedRol, 200);
+    } catch (error) {
+        respuesta.error(req, res, error.message, 500);
+    }
+}
