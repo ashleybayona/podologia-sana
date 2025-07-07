@@ -1,7 +1,22 @@
 const db = require('../config/db');
 
-// Crear foto
+const isValidImageUrl = (url) => {
+    const regex = /\.(jpeg|jpg|png|gif|bmp|webp)$/i;
+    try {
+        const parsedUrl = new URL(url);
+        return regex.test(parsedUrl.pathname);
+    } catch (e) {
+        return false;
+    }
+};
+
 exports.create = async (data) => {
+    if (!isValidImageUrl(data.url)) {
+        const error = new Error('URL de imagen no válida o no es una imagen');
+        error.name = 'ValidationError';
+        throw error;
+    }
+
     const query = `CALL sp_agregar_foto(?, ?, ?, ?)`;
     const params = [
         data.url,
