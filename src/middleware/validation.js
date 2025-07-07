@@ -748,6 +748,57 @@ const validation = {
             }
 
             next();
+        },
+        
+        validateRelacionAA: async (req, res, next) => {
+            const { id_atencion, id_afeccion } = req.body;
+            const errors = [];
+
+            if (!id_atencion || isNaN(id_atencion)) errors.push('id_atencion es obligatorio y numérico');
+            if (!id_afeccion || isNaN(id_afeccion)) errors.push('id_afeccion es obligatorio y numérico');
+
+            if (errors.length > 0) {
+                return respuesta.error(req, res, {
+                    error: 'Datos inválidos',
+                    details: errors
+                }, 400);
+            }
+
+            next();
+        },
+
+        validateRelacionAF: async (req, res, next) => {
+            const { id_atencion, id_foto } = req.body;
+            const errors = [];
+
+            if (!id_atencion || isNaN(id_atencion)) errors.push('id_atencion es obligatorio y numérico');
+            if (!id_foto || isNaN(id_foto)) errors.push('id_foto es obligatorio y numérico');
+
+            if (errors.length > 0) {
+                return respuesta.error(req, res, {
+                    error: 'Datos inválidos',
+                    details: errors
+                }, 400);
+            }
+
+            next();
+        },
+
+        validateRelacionAT: async (req, res, next) => {
+            const { id_atencion, id_tratamiento } = req.body;
+            const errors = [];
+
+            if (!id_atencion || isNaN(id_atencion)) errors.push('id_atencion es obligatorio y numérico');
+            if (!id_tratamiento || isNaN(id_tratamiento)) errors.push('id_tratamiento es obligatorio y numérico');
+
+            if (errors.length > 0) {
+                return respuesta.error(req, res, {
+                    error: 'Datos inválidos',
+                    details: errors
+                }, 400);
+            }
+
+            next();
         }
     },
 
@@ -910,6 +961,46 @@ const validation = {
                 return respuesta.error(req, res, 'Error al procesar los datos', 500);
             }
             
+            next();
+        }
+    },
+
+    foto: {
+        validateCreate: async (req, res, next) => {
+            const { url, titulo, descripcion, fecha } = req.body;
+            const errors = [];
+
+            // Validaciones obligatorias
+            if (!url || typeof url !== 'string' || !url.trim().startsWith('http')) {
+                errors.push('URL es obligatoria y debe ser una dirección válida');
+            }
+
+            if (!titulo || typeof titulo !== 'string' || titulo.trim().length < 2) {
+                errors.push('Título es obligatorio y debe tener al menos 2 caracteres');
+            }
+
+            // Validaciones opcionales
+            if (descripcion && typeof descripcion !== 'string') {
+                errors.push('La descripción debe ser texto');
+            }
+
+            if (fecha && isNaN(Date.parse(fecha))) {
+                errors.push('La fecha debe tener un formato válido (YYYY-MM-DD)');
+            }
+
+            if (errors.length > 0) {
+                return respuesta.error(req, res, {
+                    error: 'Datos inválidos',
+                    details: errors
+                }, 400);
+            }
+
+            // Limpieza
+            req.body.url = url.trim();
+            req.body.titulo = titulo.trim();
+            if (descripcion) req.body.descripcion = descripcion.trim();
+            if (fecha) req.body.fecha = new Date(fecha); // se puede guardar como objeto Date
+
             next();
         }
     }
