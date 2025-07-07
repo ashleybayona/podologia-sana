@@ -128,8 +128,9 @@ exports.topMasRecientes = async () => {
 
 exports.getAtencionesByPaciente = async (id_paciente) => {
     const query = `
-        SELECT * FROM view_atenciones 
+        SELECT * FROM view_historial_clinico_resumido 
         WHERE id_paciente = ?
+        ORDER BY fecha_atencion DESC
     `;
     const [result] = await db.query(query, [id_paciente]);
     return result;
