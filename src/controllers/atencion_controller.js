@@ -17,9 +17,11 @@ exports.getAtenciones = async (req, res) => {
 
 exports.addAtencion = async (req, res) => {
     try {
-        const nueva = await service.createAtencion(req.body);
-        respuesta.success(req, res, { message: 'Atención creada', data: nueva }, 201);
+        const atencionData = req.body;
+        const newAtencion = await service.createAtencion(atencionData);
+        respuesta.success(req, res, { message: 'Atención creada', data: newAtencion }, 201);
     } catch (error) {
+        console.log(error);
         respuesta.error(req, res, error.message, 500);
     }
 }

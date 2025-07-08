@@ -99,3 +99,11 @@ exports.create = async (citaData) => {
         throw error;
     }
 };
+
+exports.ifExists = async (id) => {
+    const query = `
+        SELECT COUNT(*) as total FROM cita WHERE id_cita = ?
+    `;
+    const [result] = await db.query(query, [id]);
+    return result[0].total > 0;
+};
