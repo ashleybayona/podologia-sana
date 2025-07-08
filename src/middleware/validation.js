@@ -843,10 +843,6 @@ const validation = {
                 errors.push('Tipo de pago es obligatorio');
             }
 
-            if (!codigo_operacion || typeof codigo_operacion !== 'string') {
-                errors.push('Código de operación es obligatorio y debe ser una cadena de texto');
-            }
-
             if (!detalles || !Array.isArray(detalles) || detalles.length === 0) {
                 errors.push('Detalles son obligatorios y deben ser un arreglo');
             }
