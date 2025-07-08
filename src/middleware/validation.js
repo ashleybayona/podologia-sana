@@ -564,40 +564,41 @@ const validation = {
     atencion: {
         validateCreate: async (req, res, next) => {
             const {
-                paciente,
-                historial,
-                cita,
+                ident_paciente,
+                id_cita, // puede ser null pero tmb verificar si existe
+                ident_doctor,
                 tipo_atencion,
                 consultorio,
-                direccion_domicilio,
-                fecha_atencion,
-                doctor,
-                diagnostico,
-                observaciones,
-                peso,
-                altura,
-                total,
+                direccion,
                 tipo_pago,
-                codigo_operacion
+                diagnostico,
+                fecha,
+                hora,
+                tratamientos,
+                afecciones,
+                peso,
+                altura
             } = req.body;
 
             const errors = [];
 
-            if (!paciente) errors.push('Paciente es obligatorio');
-            if (!historial) errors.push('Historial es obligatorio');
-            if (!cita) errors.push('Cita es obligatoria');
-            if (!['AD', 'AC'].includes(tipo_atencion)) errors.push('Tipo de atención debe ser AD o AC');
-            if (!consultorio || isNaN(consultorio)) errors.push('Consultorio es obligatorio y debe ser numérico');
-            if (!fecha_atencion) errors.push('Fecha de atención es obligatoria');
-            if (!doctor) errors.push('Doctor es obligatorio');
-            if (total == undefined || isNaN(total) || parseFloat(total) < 0)
-                errors.push('Total es obligatorio y debe ser mayor o igual a 0');
+            if (!ident_paciente) errors.push('Identificacion de paciente es obligatorio');
+            if (!tipo_atencion) errors.push('Tipo de atención es obligatorio');
+            if (tipo_atencion.toLowerCase() === 'consultorio' && !consultorio) errors.push('Consultorio es obligatorio si el tipo de atención es consultorio');
+            if(tipo_atencion.toLowerCase() === 'domicilio' && !direccion) {
+                errors.push('Dirección es obligatoria si el tipo de atención es domicilio');
+            }
+            if (!fecha) errors.push('Fecha de atención es obligatoria');
+            if (!hora) errors.push('Hora de atención es obligatoria');
+            if (!ident_doctor) errors.push('Identificacion de doctor es obligatorio');
             if (!tipo_pago) errors.push('Tipo de pago es obligatorio');
-
-            if (peso != undefined && (isNaN(peso) || parseFloat(peso) < 0))
-                errors.push('Peso debe ser un número válido');
-            if (altura != undefined && (isNaN(altura) || parseFloat(altura) < 0))
-                errors.push('Altura debe ser un número válido');
+            if (!diagnostico) errors.push('Diagnóstico es obligatorio');
+            if (!tratamientos || !Array.isArray(tratamientos) || tratamientos.length === 0) {
+                errors.push('Tratamientos son obligatorios y deben ser un arreglo');
+            }
+            if (!afecciones || !Array.isArray(afecciones) || afecciones.length === 0) {
+                errors.push('Afecciones son obligatorias y deben ser un arreglo');
+            }
 
             if (errors.length > 0) {
                 return respuesta.error(req, res, {
@@ -610,36 +611,46 @@ const validation = {
                 const pacienteModel = require('../models/paciente_model');
                 const doctorModel = require('../models/doctor_model');
                 const tipoModel = require('../models/tipo_general_model');
-                const historialModel = require('../models/historial_model');
-                const citaModel = require('../models/cita_model');
 
-                const pacienteResult = await pacienteModel.findByNameOrId(paciente);
-                const doctorResult = await doctorModel.findByNameOrId(doctor);
+                const pacienteResult = await pacienteModel.getPacienteByIdentificacion(ident_paciente);
+                const doctorResult = await doctorModel.getDoctorByIdentificacion(ident_doctor);
                 const tipoPagoResult = await tipoModel.findByNameOrCode(tipo_pago);
-                const historialResult = await historialModel.findById(historial);
-                const citaResult = await citaModel.findById(cita);
+                const tipoAtencionResult = await tipoModel.findByNameOrCode(tipo_atencion);
 
-                if (!pacienteResult) return respuesta.error(req, res, `Paciente '${paciente}' no encontrado`, 404);
-                if (!doctorResult) return respuesta.error(req, res, `Doctor '${doctor}' no encontrado`, 404);
+                if (!pacienteResult) return respuesta.error(req, res, `Paciente '${ident_paciente}' no encontrado`, 404);
+                if (!doctorResult) return respuesta.error(req, res, `Doctor '${ident_doctor}' no encontrado`, 404);
                 if (!tipoPagoResult) return respuesta.error(req, res, `Tipo de pago '${tipo_pago}' no encontrado`, 404);
-                if (!historialResult) return respuesta.error(req, res, `Historial '${historial}' no encontrado`, 404);
-                if (!citaResult) return respuesta.error(req, res, `Cita '${cita}' no encontrada`, 404);
+                if (!tipoAtencionResult) return respuesta.error(req, res, `Tipo de atención '${tipo_atencion}' no encontrado`, 404);
+
+                // si se ingresa validar de q exista
+                if (id_cita) {
+                    const citaModel = require('../models/citas_model');
+                    const citaResult = await citaModel.ifExists(id_cita);
+
+                    if (!citaResult) {
+                        return respuesta.error(req, res, `Cita con ID '${id_cita}' no encontrada`, 404);
+                    }
+                }
+                
+                if (tipo_atencion.toLowerCase() === 'consultorio') {
+                    const consultorioModel = require('../models/consultorio_model');
+                    const consultorioId = await consultorioModel.getIdByNombre(consultorio);
+                    req.body.id_consultorio = consultorioId.id_consultorio; 
+                    delete req.body.direccion; 
+                } 
 
                 // Reemplazar campos
-                req.body.id_paciente = pacienteResult.id;
-                req.body.id_doctor = doctorResult.id;
+                req.body.id_paciente = pacienteResult.id_paciente;
+                req.body.id_doctor = doctorResult.id_doctor;
                 req.body.id_tipo_pago = tipoPagoResult.id;
-                req.body.id_historial = historialResult.id;
-                req.body.id_cita = citaResult.id;
+                req.body.id_tipo_atencion = tipoAtencionResult.id;
 
                 // Limpieza
-                delete req.body.paciente;
-                delete req.body.doctor;
+                delete req.body.ident_paciente;
+                delete req.body.ident_doctor;
                 delete req.body.tipo_pago;
-                delete req.body.historial;
-                delete req.body.cita;
+                delete req.body.tipo_atencion;
 
-                req.body.total = parseFloat(total);
                 if (peso) req.body.peso = parseFloat(peso);
                 if (altura) req.body.altura = parseFloat(altura);
 

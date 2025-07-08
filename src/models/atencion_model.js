@@ -23,27 +23,37 @@ exports.countAll = async () => {
 }
 
 // Crear atencion
-exports.create = async (data) => {
-    const query = `CALL sp_crear_atencion(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+exports.create = async (data) => { // 16 parametros
+    const query = `CALL sp_crear_atencion(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
     const params = [
-        data.id_paciente,
-        data.id_historial,
-        data.id_atencion,
-        data.tipo_atencion,
-        data.consultorio,
-        data.direccion_domicilio,
-        data.fecha_atencion,
-        data.id_doctor,
+        data.id_paciente, // ident_paciente
+        data.id_cita || null, // Puede ser NULL si no hay cita previa
+        data.id_doctor, // ident_doctor
+        data.id_tipo_atencion, // tipo_atencion -> domicilio,consultorio
+        data.id_consultorio || null, // Puede ser NULL si es a domicilio
+        data.direccion || null, // Puede ser NULL si es en consultorio
+        data.id_tipo_pago, // tipo_pago
+        data.codigo_operacion || null, // null si es en efectivo
         data.diagnostico,
-        data.observaciones,
-        data.peso,
-        data.altura,
-        data.total,
-        data.id_tipo_pago,
-        data.codigo_operacion,
+        data.observaciones || null, // Puede ser NULL si no hay observaciones
+        data.peso || null,
+        data.altura || null,
+        data.fecha,
+        data.hora,
+        JSON.stringify(data.tratamientos), // json
+        JSON.stringify(data.afecciones) // json
     ];
-    const [result] = await db.query(query, params);
-    return result[0][0];
+    console.log('params', params);
+
+    try {
+        const [result] = await db.query(query, params);
+        console.log(result)
+        return result[0][0];
+    } catch (error) {
+        console.log(error);
+        console.error('Error al crear atención:', error);
+        throw error;
+    }
 }
 
 exports.update = async (id, data) => {
