@@ -117,3 +117,11 @@ exports.getAtencionesByDoctor = async (doctorId) => {
     const [result] = await db.query(query, [doctorId]);
     return result;
 }
+
+exports.getDoctorByIdentificacion = async (identificacion) => {
+    const query = `
+        SELECT * FROM doctor WHERE identificacion = ?
+    `;
+    const [result] = await db.query(query, [identificacion]);
+    return result[0] || null;
+}

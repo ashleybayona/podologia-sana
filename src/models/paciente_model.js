@@ -138,6 +138,5 @@ exports.getPacienteByIdentificacion = async (identificacion) => {
         SELECT * FROM paciente WHERE identificacion = ?
     `;
     const [result] = await db.query(query, [identificacion]);
-    console.log(result);
     return result[0] || null;
 }

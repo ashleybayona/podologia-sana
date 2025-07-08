@@ -46,3 +46,9 @@ exports.delete = async (id) => {
         throw error;
     }
 };
+
+exports.getIdByNombre = async (nombre) => {
+    const query = `SELECT id_consultorio FROM consultorio WHERE nombre = ?`;
+    const [result] = await db.query(query, [nombre]);
+    return result[0];
+};

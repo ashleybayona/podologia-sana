@@ -359,30 +359,36 @@ const validation = {
     },
 
     cita: {
-        validateCreate: (req, res, next) => {
+        validateCreate: async (req, res, next) => {
             const {
-                id_tipo_cita,
-                id_paciente,
-                id_consultorio,
+                tipo_cita,
+                ident_paciente,
+                consultorio,
+                direccion,
                 fecha,
                 hora,
-                motivo,
-                id_tipo_estado,
-                id_doctor
+                ident_doctor
             } = req.body;
 
             const errors = [];
 
-            if (id_tipo_cita === undefined || isNaN(id_tipo_cita)) {
-                errors.push('id_tipo_cita es obligatorio y debe ser numérico');
+            if (!tipo_cita || !['domicilio', 'consultorio'].includes(tipo_cita.toLowerCase())) {
+                errors.push('tipo_cita es obligatorio y debe ser a domicilio o consultorio');
             }
 
-            if (id_paciente === undefined || isNaN(id_paciente)) {
-                errors.push('id_paciente es obligatorio y debe ser numérico');
+            if (!ident_doctor) {
+                errors.push('ident_doctor es obligatorio');
             }
 
-            if (id_consultorio === undefined || isNaN(id_consultorio)) {
-                errors.push('id_consultorio es obligatorio y debe ser numérico');
+            if (!ident_paciente) {
+                errors.push('ident_paciente es obligatorio');
+            }
+
+            if (tipo_cita.toLowerCase() === 'consultorio' && (!consultorio || isNaN(consultorio))) {
+                errors.push('consultorio es obligatorio');
+            }
+            if (tipo_cita.toLowerCase() === 'domicilio' && (!direccion || direccion.trim().length < 5)) {
+                errors.push('direccion es obligatoria y debe tener al menos 5 caracteres');
             }
 
             if (!fecha || !/^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
@@ -393,18 +399,6 @@ const validation = {
                 errors.push('hora es obligatoria y debe tener el formato HH:MM o HH:MM:SS');
             }
 
-            if (!motivo || typeof motivo !== 'string') {
-                errors.push('motivo es obligatorio y debe ser una cadena de texto');
-            }
-
-            if (id_tipo_estado === undefined || isNaN(id_tipo_estado)) {
-                errors.push('id_tipo_estado es obligatorio y debe ser numérico');
-            }
-
-            if (id_doctor === undefined || isNaN(id_doctor)) {
-                errors.push('id_doctor es obligatorio y debe ser numérico');
-            }
-
             if (errors.length > 0) {
                 return respuesta.error(req, res, {
                     error: 'Datos de entrada inválidos',
@@ -412,10 +406,45 @@ const validation = {
                 }, 400);
             }
 
-            req.body.motivo = motivo.trim();
+            try {
+                const pacienteModel = require('../models/paciente_model');
+                const doctorModel = require('../models/doctor_model');
+                const tipoModel = require('../models/tipo_general_model');
+
+                const paciente = await pacienteModel.getPacienteByIdentificacion(ident_paciente);
+                const doctor = await doctorModel.getDoctorByIdentificacion(ident_doctor);
+                const tipo = await tipoModel.findByNameOrCode(tipo_cita);
+
+                if (!paciente) {
+                    return respuesta.error(req, res, `Paciente con identificación '${ident_paciente}' no encontrado`, 404);
+                }
+                if (!doctor) {
+                    return respuesta.error(req, res, `Doctor con identificación '${ident_doctor}' no encontrado`, 404);
+                }
+                if (!tipo) {
+                    return respuesta.error(req, res, `Tipo de cita '${tipo_cita}' no encontrado`, 404);
+                }
+
+                const consultorioModel = require('../models/consultorio_model');
+                if (tipo_cita.toLowerCase() === 'consultorio') {
+                    const consultorioId = await consultorioModel.getIdByNombre(consultorio);
+                    req.body.id_consultorio = consultorioId.id_consultorio; 
+                    delete req.body.direccion; 
+                } 
+
+                req.body.id_paciente = paciente.id_paciente;
+                req.body.id_doctor = doctor.id_doctor;
+                req.body.id_tipo_cita = tipo.id;
+                delete req.body.ident_paciente;
+                delete req.body.ident_doctor;
+                delete req.body.tipo_cita; 
+            } catch (error) {
+                return respuesta.error(req, res, 'Paciente no encontrado', 404);
+            }
 
             next();
         },
+
         validateUpdate: (req, res, next) => {
             const {
                 id_tipo_cita,

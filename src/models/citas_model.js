@@ -71,43 +71,24 @@ exports.update = async (id, updatedData) => {
 };
 
 exports.create = async (citaData) => {
-    const requiredFields = [
-        'id_tipo_cita',
-        'id_paciente',
-        'id_consultorio',
-        'fecha',
-        'hora',
-        'motivo',
-        'id_tipo_estado',
-        'id_doctor'
-    ];
-
-    const missingFields = requiredFields.filter(field => citaData[field] === undefined || citaData[field] === null);
-
-    if (missingFields.length > 0) {
-        const error = new Error(`Faltan campos obligatorios: ${missingFields.join(', ')}`);
-        error.name = 'ValidationError';
-        throw error;
-    }
-
     const query = `
         CALL sp_crear_cita(?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     const params = [
-        citaData.id_tipo_cita,
-        citaData.id_paciente,
-        citaData.id_consultorio,
+        citaData.id_tipo_cita, // tipo_cita -> domicilio, consultorio
+        citaData.id_paciente, // ident_paciente -> luego se convierte
+        citaData.id_consultorio || null, // consultorio,  null si es a domicilio
+        citaData.direccion || null, // si es q el tipo es 'domicilio',null si es consultorio
         citaData.fecha,
         citaData.hora,
-        citaData.motivo,
-        citaData.id_tipo_estado,
-        citaData.id_doctor
+        citaData.motivo || null,
+        citaData.id_doctor // ident_doctor -> luego se convierte
     ];
 
     try {
         const [result] = await db.query(query, params);
-        return result[0][0]; // retornamos la cita insertada
+        return result[0][0]; 
     } catch (error) {
         if (error.message.includes('Cita duplicada')) {
             const customError = new Error(error.message);
