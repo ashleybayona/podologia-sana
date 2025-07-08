@@ -73,25 +73,22 @@ exports.getById = async (id) => {
 
 exports.create = async (pacienteData) => {
     const query = `
-        CALL sp_crear_paciente(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        CALL sp_crear_paciente(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     const params = [
-        pacienteData.numero_historia,
-        pacienteData.id_tipo_ident,
+        pacienteData.id_tipo_ident, // tipo_identificacion -> dni, ce, etc.
         pacienteData.identificacion,
         pacienteData.nombre,
         pacienteData.apellido,
         pacienteData.fecha_nacimiento,
         pacienteData.telefono,
-        pacienteData.correo,
-        pacienteData.id_ubigeo,
-        pacienteData.direccion,
-        pacienteData.genero,
-        pacienteData.id_tipo_pie,
+        pacienteData.correo || null,
+        pacienteData.id_ubigeo || null, // departamento, provincia, distrito -> luego se convierte a su id
+        pacienteData.direccion || null,
+        pacienteData.genero || null,
         pacienteData.peso || null,
         pacienteData.altura || null,
-        pacienteData.alergias || null,
-        pacienteData.es_paciente_medico
+        pacienteData.alergias || null
     ];
 
     try {

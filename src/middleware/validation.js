@@ -172,29 +172,18 @@ const validation = {
 
         validateCreate: async (req, res, next) => {
             const {
-                numero_historia,
                 tipo_identificacion,
                 identificacion,
                 nombre,
                 apellido,
                 fecha_nacimiento,
                 telefono,
-                correo,
-                id_ubigeo,
-                direccion,
-                genero,
-                id_tipo_pie,
-                peso,
-                altura,
-                alergias,
-                es_paciente_medico
+                provincia,
+                departamento,
+                distrito
             } = req.body;
 
             const errors = [];
-
-            if (!numero_historia || isNaN(numero_historia)) {
-                errors.push('Número de historia es obligatorio y debe ser numérico');
-            }
 
             if (!tipo_identificacion) {
                 errors.push('Tipo de identificación es obligatorio');
@@ -220,42 +209,6 @@ const validation = {
                 errors.push('Teléfono debe tener entre 7 y 15 dígitos');
             }
 
-            if (!correo || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
-                errors.push('Correo debe ser un email válido');
-            }
-
-            if (!id_ubigeo || isNaN(id_ubigeo)) {
-                errors.push('ID de ubigeo es obligatorio y debe ser numérico');
-            }
-
-            if (!direccion || direccion.trim().length < 5) {
-                errors.push('Dirección es obligatoria y debe tener al menos 5 caracteres');
-            }
-
-            if (!['M', 'F'].includes(genero)) {
-                errors.push('Género debe ser "M" o "F"');
-            }
-
-            if (!id_tipo_pie || isNaN(id_tipo_pie)) {
-                errors.push('ID de tipo de pie es obligatorio y debe ser numérico');
-            }
-
-            if (peso !== undefined && (isNaN(peso) || parseFloat(peso) <= 0)) {
-                errors.push('Peso debe ser un número mayor a 0');
-            }
-
-            if (altura !== undefined && (isNaN(altura) || parseFloat(altura) <= 0)) {
-                errors.push('Altura debe ser un número mayor a 0');
-            }
-
-            if (alergias !== undefined && typeof alergias !== 'string') {
-                errors.push('Alergias debe ser una cadena de texto');
-            }
-
-            if (es_paciente_medico !== undefined && ![0, 1].includes(parseInt(es_paciente_medico))) {
-                errors.push('es_paciente_medico debe ser 0 o 1');
-            }
-
             if (errors.length > 0) {
                 const error = {
                     error: 'Datos de entrada inválidos',
@@ -274,19 +227,31 @@ const validation = {
                     return respuesta.error(req, res, `Tipo_identificacion '${tipo_identificacion}' no encontrado`, 404);
                 }
 
+                if (provincia && departamento && distrito) {
+                    // HACER EL CAMBIO A ID (SOLO SI EXISTEN)
+                    const ubigeoModel = require('../models/ubigeo_model');
+                    const ubigeo = await ubigeoModel.getIdUbigeo(departamento, provincia, distrito);
+
+                    if (!ubigeo) {
+                        return respuesta.error(req, res, `Ubigeo no encontrado para ${provincia}, ${departamento}, ${distrito}`, 404);
+                    }
+
+                    req.body.id_ubigeo = ubigeo.id_ubigeo;
+                    delete req.body.provincia;
+                    delete req.body.departamento;
+                    delete req.body.distrito;
+                }
+
                 req.body.id_tipo_ident = tipo.id;
                 delete req.body.tipo_identificacion;
             } catch (error) {
-                return respuesta.error(req, res, 'Error al procesar tipo de identificación', 500);
+                return respuesta.error(req, res, 'Error al procesar tipo de identificación o ubigeo', 500);
             }
 
             req.body.identificacion = identificacion.trim();
             req.body.nombre = nombre.trim();
             req.body.apellido = apellido.trim();
             req.body.telefono = telefono.trim();
-            req.body.correo = correo.trim();
-            req.body.direccion = direccion.trim();
-            if (alergias) req.body.alergias = alergias.trim();
 
             next();
         }
