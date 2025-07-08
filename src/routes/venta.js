@@ -1,3 +1,6 @@
+const express = require('express');
+const router = express.Router();
+
 const controller = require('../controllers/venta_controller');
 const validation = require('../middleware/validation')
 

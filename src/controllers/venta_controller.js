@@ -1,3 +1,4 @@
+const respuesta = require('../util/respuestas');
 const service = require('../services/venta_service');
 
 exports.createVenta = async (req, res) => {
@@ -9,7 +10,7 @@ exports.createVenta = async (req, res) => {
     } catch (error) {
         if (error.name === 'NotFoundError') {
             respuesta.error(req, res, error.message, 404);
-        } else {s
+        } else {
             respuesta.error(req, res, error.message, 500);
         }
     }

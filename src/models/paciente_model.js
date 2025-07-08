@@ -135,3 +135,12 @@ exports.getAtencionesByPaciente = async (id_paciente) => {
     const [result] = await db.query(query, [id_paciente]);
     return result;
 }
+
+exports.getPacienteByIdentificacion = async (identificacion) => {
+    const query = `
+        SELECT * FROM paciente WHERE identificacion = ?
+    `;
+    const [result] = await db.query(query, [identificacion]);
+    console.log(result);
+    return result[0] || null;
+}

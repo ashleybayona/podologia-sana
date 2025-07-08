@@ -832,15 +832,19 @@ const validation = {
 
     venta: {
         validateCreate: async (req, res, next) => {
-            const { id_paciente, tipo_pago, codigo_operacion, detalles } = req.body;
+            const { identificacion, tipo_pago, codigo_operacion, detalles } = req.body;
             const errors = [];
 
-            if (!id_paciente) {
-                errors.push('ID de paciente es obligatorio');
+            if (!identificacion) {
+                errors.push('Identificación de paciente es obligatoria');
             }
 
             if (!tipo_pago) {
                 errors.push('Tipo de pago es obligatorio');
+            }
+
+            if (!codigo_operacion || typeof codigo_operacion !== 'string') {
+                errors.push('Código de operación es obligatorio y debe ser una cadena de texto');
             }
 
             if (!detalles || !Array.isArray(detalles) || detalles.length === 0) {
@@ -857,14 +861,22 @@ const validation = {
             // convertir tipo_pago a id_tipo_pago
             try {
                 const tipoModel = require('../models/tipo_general_model');
+                const pacienteModel = require('../models/paciente_model');
+
                 const tipo = await tipoModel.findByNameOrCode(tipo_pago);
+                const paciente = await pacienteModel.getPacienteByIdentificacion(identificacion);
 
                 if (!tipo) {
                     return respuesta.error(req, res, `Tipo de pago '${tipo_pago}' no encontrado`, 404);
                 }
+                if (!paciente) {
+                    return respuesta.error(req, res, `Paciente con identificación '${identificacion}' no encontrado`, 404);
+                }
 
                 req.body.id_tipo_pago = tipo.id;
+                req.body.id_paciente = paciente.id_paciente;
                 delete req.body.tipo_pago; 
+                delete req.body.identificacion; 
             } catch (error) {
                 return respuesta.error(req, res, 'Error al procesar los datos', 500);
             }
