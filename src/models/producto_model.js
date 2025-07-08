@@ -25,7 +25,7 @@ exports.create = async (productoData) => {
     const query = `
         CALL sp_crear_producto(?, ?, ?, ?, ?)
     `;
-    const params = [
+    const params = [ // todo tal cual
         productoData.nombre,
         productoData.descripcion,
         productoData.precio_venta,
@@ -55,7 +55,7 @@ exports.update = async (id, productoData) => {
     const query = `
         CALL sp_actualizar_producto(?, ?, ?, ?, ?, ?)
     `;
-    const params = [
+    const params = [ // todo tal cual
         id,
         productoData.nombre || null,
         productoData.descripcion || null,

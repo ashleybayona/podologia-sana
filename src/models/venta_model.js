@@ -28,10 +28,10 @@ exports.create = async (data) => {
         CALL sp_crear_venta_con_detalles(?, ?, ?, ?)
     `;
     const params = [
-        data.id_paciente,
-        data.id_tipo_pago,
+        data.id_paciente, // identificacion -> luego lo convierte al id
+        data.id_tipo_pago, // tipo_pago -> luego lo convierte al id
         data.codigo_operacion,
-        JSON.stringify(data.detalles) 
+        JSON.stringify(data.detalles) // json con los productos [{"id_producto": 1, "cantidad": 2}, ...]
     ];
 
     try {
@@ -67,44 +67,3 @@ exports.getDetallesVenta = async (id) => {
         throw error;
     }
 }
-
-/* no le veo funcionalidad
-exports.update = async (id, data) => {
-    const updatableFields = [
-        'id_paciente',
-        'id_tipo_pago',
-        'codigo_operacion',
-        'detalles'
-    ];
-
-    const hasAtLeastOneField = updatableFields.some(field => data[field] !== undefined);
-
-    if (!hasAtLeastOneField) {
-        const error = new Error('Debe proporcionar al menos un campo para actualizar.');
-        error.name = 'ValidationError';
-        throw error;
-    }
-
-    const query = `CALL sp_actualizar_venta(?, ?, ?, ?)`;
-    const params = [
-        id,
-        data.id_paciente ?? null,
-        data.id_tipo_pago ?? null,
-        data.codigo_operacion ?? null,
-        data.detalles ?? null
-    ];
-
-    try {
-        const [result] = await db.query(query, params);
-        return result[0][0];
-    } catch (error) {
-        if (error.message.includes('Venta no encontrada')) {
-            const customError = new Error(error.message);
-            customError.name = 'NotFoundError';
-            throw customError;
-        }
-
-        throw error;
-    }
-};
-*/

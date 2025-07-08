@@ -48,7 +48,7 @@ exports.create = async (doctorData) => {
         doctorData.nombre,
         doctorData.apellido,
         doctorData.telefono,
-        doctorData.id_tipo_ident,
+        doctorData.id_tipo_ident, // tipo_identificacion -> dni, ce, etc.
         doctorData.identificacion
     ];
 
