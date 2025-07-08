@@ -333,10 +333,12 @@ const validation = {
                 return respuesta.error(req, res, error, 400);
             }
 
-            try {S
+            try {
                 if (categoria) {
                     const tipoModel = require('../models/tipo_general_model');
+                    console.log('antesdtipo')
                     const tipo = await tipoModel.findByNameOrCode(categoria);
+                    console.log(tipo);
 
                     if (!tipo) {
                         return respuesta.error(req, res, `Categoria '${categoria}' no encontrada`, 404);

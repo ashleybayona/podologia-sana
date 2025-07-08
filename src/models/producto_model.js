@@ -25,12 +25,12 @@ exports.create = async (productoData) => {
     const query = `
         CALL sp_crear_producto(?, ?, ?, ?, ?)
     `;
-    const params = [ // todo tal cual
+    const params = [ 
         productoData.nombre,
-        productoData.descripcion,
+        productoData.descripcion || null,
         productoData.precio_venta,
         productoData.stock,
-        productoData.id_tipo_categoria,
+        productoData.id_tipo_categoria, // categoria -> crema, solucion, spray, laca, dispositivo
     ];
 
     try {
@@ -55,13 +55,13 @@ exports.update = async (id, productoData) => {
     const query = `
         CALL sp_actualizar_producto(?, ?, ?, ?, ?, ?)
     `;
-    const params = [ // todo tal cual
+    const params = [ 
         id,
         productoData.nombre || null,
         productoData.descripcion || null,
         productoData.precio_venta || null,
         productoData.stock || null,
-        productoData.id_tipo_categoria || null,
+        productoData.id_tipo_categoria || null, // categoria -> crema, solucion, spray, laca, dispositivo
     ];
 
     try {
