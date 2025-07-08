@@ -16,7 +16,6 @@ const atencion = require("./routes/atencion");
 const consultorio = require("./routes/consultorio");
 const venta = require("./routes/venta");
 const reportes = require("./routes/reportes");
-const atencion = require("./routes/venta");
 const foto = require("./routes/foto");
 
 const app = express();
